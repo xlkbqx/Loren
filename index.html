@@ -8,26 +8,29 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Work+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #F3EFE7;
-    --surface: #FBF9F4;
-    --surface-2: #E8E1D3;
-    --line: rgba(35,49,38,0.12);
-    --text: #2A2420;
-    --text-muted: #7C7468;
+    --bg: #14140f;
+    --surface: #233126;
+    --surface-2: #4A1A23;
+    --line: rgba(216,208,194,0.14);
+    --text: #D8D0C2;
+    --text-muted: #9CAB91;
     --bordeaux: #4A1A23;
     --hunter: #233126;
     --sage: #6A7657;
     --bone: #D8D0C2;
     --cedar: #8C603E;
-    --menstrual: var(--bordeaux);
+    --menstrual: #BC4A5C;
     --folicular: var(--sage);
     --ovulatoria: var(--cedar);
-    --lutea: var(--hunter);
+    --lutea: var(--bone);
     --accent: var(--cedar);
-    --radius: 18px;
+    --radius: 14px;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
+  img, svg, input, textarea, select{ max-width: 100%; }
+  .rit-row, .rit-row > span, .pocket-head, .el-head, label.rit-row, .grocery-list li, .grocery-list li > label, .meal-row{ min-width: 0; }
+  .rit-item-name, .rit-item-desc, .gname, .meal-row, .debt-name, .plant-desc{ overflow-wrap: anywhere; word-break: break-word; }
+  html,body{margin:0;padding:0; max-width:100%; overflow-x:hidden;}
   body{
     background: var(--bg);
     color: var(--text);
@@ -94,7 +97,7 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 28px;
+    padding: 14px;
     margin-bottom: 20px;
   }
   .card h2{
@@ -130,7 +133,7 @@
   input:focus{outline: 2px solid var(--accent); outline-offset: 1px;}
   .btn{
     background: var(--accent);
-    color: var(--surface);
+    color: var(--bone);
     border: none;
     padding: 12px 20px;
     border-radius: 10px;
@@ -146,6 +149,7 @@
     font-weight: 500;
   }
   .row{display:flex; gap: 12px; flex-wrap: wrap; align-items:center;}
+  @media (max-width: 420px){ .row{ flex-direction: column; align-items: stretch; } .row > *{ min-width: 0 !important; width: 100%; } }
 
   /* ---- Dial ---- */
   .intention-card{
@@ -158,7 +162,7 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 18px 22px;
+    padding: 11px 14px;
     margin-bottom: 24px;
   }
 
@@ -169,20 +173,20 @@
     text-align:center;
     margin-bottom: 30px;
   }
-  .dial-wrap{position:relative; width: 230px; height: 230px;}
+  .dial-wrap{position:relative; width: 188px; height: 188px;}
   .dial-center{
     position:absolute; inset:0;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
   }
-  .moon-glyph{font-size: 30px; line-height:1;}
+  .moon-glyph{font-size: 24px; line-height:1;}
   .day-number{
     font-family:'JetBrains Mono', monospace;
-    font-size: 28px;
+    font-size: 23px;
     margin-top: 4px;
   }
   .day-total{
     font-family:'JetBrains Mono', monospace;
-    font-size: 13px;
+    font-size: 11px;
     color: var(--text-muted);
   }
   .phase-name{
@@ -232,7 +236,7 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 20px;
+    padding: 11px;
     position: relative;
   }
   .el-head{
@@ -316,7 +320,7 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 26px;
+    padding: 16px;
     max-width: 380px;
     width: 100%;
   }
@@ -324,7 +328,7 @@
   .loading{ color: var(--text-muted); font-size: 14px; padding: 40px 0; text-align:center; }
 
   /* ---- Rituales ---- */
-  .rit-block{ margin-bottom: 34px; }
+  .rit-block{ margin-bottom: 22px; }
   .rit-head{
     display:flex;
     align-items:baseline;
@@ -359,7 +363,7 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 14px;
-    padding: 14px 16px;
+    padding: 8px 10px;
     margin-bottom: 10px;
   }
   .rit-item.done{ border-color: var(--accent); }
@@ -375,8 +379,8 @@
     width: 17px; height: 17px;
     flex-shrink:0;
   }
-  .rit-item-name{ font-size: 14.5px; font-weight: 500; }
-  .rit-item-desc{ font-size: 13px; color: var(--text-muted); margin-top: 3px; line-height: 1.45; }
+  .rit-item-name{ font-size: 13.5px; font-weight: 500; }
+  .rit-item-desc{ font-size: 12px; color: var(--text-muted); margin-top: 3px; line-height: 1.4; }
 
   .week-strip{
     display:grid;
@@ -459,7 +463,7 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 18px 20px;
+    padding: 9px 11px;
     margin-bottom: 12px;
   }
   .meal-name{
@@ -478,7 +482,7 @@
   .prep-box{
     background: var(--surface-2);
     border-radius: 12px;
-    padding: 12px 14px;
+    padding: 9px 11px;
     margin-top: 8px;
     font-size: 13px;
     color: var(--text-muted);
@@ -542,7 +546,7 @@
     background: var(--surface-2);
     border: 1px solid var(--menstrual);
     border-radius: 14px;
-    padding: 14px 16px;
+    padding: 8px 10px;
     margin-bottom: 20px;
     font-size: 13.5px;
     line-height: 1.55;
@@ -552,7 +556,7 @@
     background: var(--surface);
     border: 1px solid var(--accent);
     border-radius: var(--radius);
-    padding: 20px;
+    padding: 11px;
     margin-bottom: 22px;
   }
   .today-exercise .ex-label{
@@ -625,7 +629,7 @@
     background: var(--surface-2);
     border: 1px solid var(--line);
     border-radius: 12px;
-    padding: 12px 14px;
+    padding: 9px 11px;
   }
   .fin-stat .fin-label{ font-family:'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
   .fin-stat .fin-value{ font-family:'Fraunces', serif; font-size: 18px; margin-top: 4px; }
@@ -633,7 +637,7 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    padding: 18px 20px;
+    padding: 10px 12px;
     margin-bottom: 16px;
   }
   .pocket-head{
@@ -648,7 +652,7 @@
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 14px;
-    padding: 16px;
+    padding: 9px 10px;
     margin-bottom: 10px;
   }
   .debt-name{ font-family:'Fraunces', serif; font-style: italic; font-size: 16px; margin-bottom: 6px; }
@@ -706,18 +710,4 @@
       <label for="editLength">Duración promedio de tu ciclo (días)</label>
       <input type="number" id="editLength" min="20" max="45">
     </div>
-    <div class="row" style="justify-content: space-between;">
-      <button class="btn ghost" id="cancelSettings">Cancelar</button>
-      <button class="btn" id="saveSettings">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-// ---------- Polyfill de almacenamiento ----------
-// window.storage solo existe dentro de los artifacts de Claude.ai.
-// Fuera de ahí (como al abrir esto desde GitHub) no existe, y por eso
-// el ciclo, los rituales, etc. parecían no calcular nada: cada lectura
-// fallaba
+    <div class="row" style="justify-content: space-between;
