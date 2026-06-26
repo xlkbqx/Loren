@@ -591,6 +591,46 @@
     margin-bottom: 10px;
   }
   .stage-title{ font-family:'Fraunces', serif; font-size: 15px; color: var(--accent); margin-bottom: 4px; }
+
+  /* ---- Finanzas ---- */
+  .fin-summary{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    margin: 14px 0;
+  }
+  @media (max-width: 520px){ .fin-summary{ grid-template-columns: repeat(2, 1fr); } }
+  .fin-stat{
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 14px;
+  }
+  .fin-stat .fin-label{ font-family:'JetBrains Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+  .fin-stat .fin-value{ font-family:'Fraunces', serif; font-size: 18px; margin-top: 4px; }
+  .pocket-card{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+  .pocket-head{
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+  }
+  .pocket-title{ font-family:'Fraunces', serif; font-size: 18px; }
+  .pocket-available{ font-family:'JetBrains Mono', monospace; font-size: 15px; color: var(--accent); }
+  .debt-card{
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .debt-name{ font-family:'Fraunces', serif; font-size: 16px; margin-bottom: 6px; }
 </style>
 </head>
 <body>
@@ -605,6 +645,7 @@
     <button id="tab-ejercicio">Ejercicio</button>
     <button id="tab-hogar">Hogar</button>
     <button id="tab-learning">Learning</button>
+    <button id="tab-finanzas">Finanzas</button>
   </div>
 
   <div id="app">
@@ -1185,6 +1226,50 @@ const LEARNING_ROADMAP = [
   { stage:'Mes 4+ · Refinamiento', detail:'Compara tu grabación actual con la del mes 2 — el progreso real motiva más que cualquier meta abstracta. Enfócate en cambiar de registro (casual↔formal) con fluidez y en pulir el acento con shadowing de contenido más avanzado.' }
 ];
 
+// ---------- Finanzas: datos base (confirmados por ti, organizados por bolsillo) ----------
+const FINANZAS_POCKETS = ['Necesidades', 'Estilo de vida', 'Ahorro/Inversión', 'Deudas', 'Give'];
+
+const FINANZAS_EXPENSES = [
+  { name:'Internet móvil + Google', amount:45000, category:'Necesidades', day:6 },
+  { name:'Luz', amount:100000, category:'Necesidades', day:6 },
+  { name:'Tammy', amount:120000, category:'Necesidades', day:6 },
+  { name:'Administración', amount:180000, category:'Necesidades', day:6 },
+  { name:'Viaje', amount:1500000, category:'Estilo de vida', day:6 },
+  { name:'Educación', amount:400000, category:'Estilo de vida', day:6 },
+  { name:'Fondo de emergencias', amount:500000, category:'Ahorro/Inversión', day:6 },
+  { name:'Inversión en CDT', amount:1200000, category:'Ahorro/Inversión', day:6 },
+  { name:'Ocio y salidas', amount:400000, category:'Estilo de vida', day:6 },
+  { name:'Mercado', amount:600000, category:'Necesidades', day:21 },
+  { name:'Planilla (seguridad social)', amount:850000, category:'Necesidades', day:21 },
+  { name:'Agua', amount:70000, category:'Necesidades', day:21 },
+  { name:'Gas', amount:30000, category:'Necesidades', day:21 },
+  { name:'Internet hogar', amount:94000, category:'Necesidades', day:21 },
+  { name:'Hipoteca Credifamilia', amount:640000, category:'Deudas', day:21 },
+  { name:'Scotiabank (cuota + abono extra)', amount:1500000, category:'Deudas', day:21 },
+  { name:'Ocio y salidas', amount:400000, category:'Estilo de vida', day:21 },
+  { name:'Give', amount:100000, category:'Give', day:6 },
+  { name:'Give', amount:150000, category:'Give', day:21 }
+];
+
+const FINANZAS_DEBTS = [
+  { name:'Hipoteca Credifamilia', total:83000000, cuota:640000, rate:'10.7% + UVR (variable)', paymentsDone:30, paymentsTotal:240 },
+  { name:'Préstamo Scotiabank', total:24000000, cuota:650000, cuotaReal:1500000, rate:'22.41% E.A.', paymentsDone:14, paymentsTotal:72 }
+];
+
+const FINANZAS_INVESTMENTS = [
+  { name:'Bancolombia CDT', invested:1200000, expectedReturn:120000, total:1320000, date:'22 abr 2026 → 22 abr 2027' },
+  { name:'Inversión Happi', invested:1100000, expectedReturn:110000, total:1210000, date:'vence 5 jun 2026' }
+];
+
+const FINANZAS_ACTIONS = [
+  { id:'prioriza-scotiabank', text:'Scotiabank está al 22,41% E.A. — es una tasa cara. Cada peso extra que abonas ahí "rinde" más que cualquier inversión que tengas (tu CDT y Happi rentan ~10%). Moví los $300.000 que liberaste de Educación hacia acá: ahora abonas $1.500.000/mes cuando la cuota mínima es $650.000 — es la jugada matemáticamente más rentable que tienes disponible hoy.' },
+  { id:'hipoteca-deduccion', text:'Los intereses de crédito hipotecario para vivienda son deducibles de la renta en Colombia hasta cierto tope anual. Confírmalo con tu contador — podrías estar dejando plata sobre la mesa cada año.' },
+  { id:'fondo-emergencia', text:'Tu fondo de emergencia objetivo (3 a 6 meses de tus Necesidades, $2.089.000/mes) estaría entre ~$6,3M y ~$12,5M. Tu aporte actual es $500.000/mes — a ese ritmo te toma entre 13 y 25 meses llegar ahí.' },
+  { id:'aportes-voluntarios', text:'Como pagas Planilla (seguridad social) de forma independiente, revisa con un asesor tributario si te conviene hacer aportes voluntarios a pensión (AVP) o a una cuenta AFC — en Colombia son deducibles de tu base gravable de renta hasta ciertos límites, así reduces impuesto y ahorras al mismo tiempo.' },
+  { id:'uvr', text:'Tu hipoteca está en UVR, lo que significa que el saldo en pesos sube con la inflación además del interés. Pide a Credifamilia el saldo actual en UVR y en pesos cada 6 meses para no perder de vista cuánto debes realmente — la cuota fija no siempre refleja el saldo real.' },
+  { id:'ingreso', text:'Tu ingreso varía según la TRM del día — actualiza la tasa de cambio arriba cada quincena (cuando te paguen) para que tu superávit y tus proyecciones reflejen la realidad, no un promedio viejo.' }
+];
+
 async function loadRitualDay(dateKey){
   try{
     const r = await window.storage.get('ritual-day:' + dateKey);
@@ -1268,6 +1353,40 @@ async function loadLearningDay(dateKey){
 }
 async function saveLearningDay(dateKey, data){
   try{ await window.storage.set('learning-day:' + dateKey, JSON.stringify(data)); }
+  catch(e){ showToast('No se pudo guardar.'); }
+}
+
+function getMonthKey(date){
+  return date.toISOString().slice(0,7); // YYYY-MM
+}
+async function loadFinanzasConfig(){
+  try{
+    const r = await window.storage.get('finanzas-config');
+    return r ? JSON.parse(r.value) : { usd6: 1280, usd21: 1480, rate: 3430 };
+  }catch(e){ return { usd6: 1280, usd21: 1480, rate: 3430 }; }
+}
+async function saveFinanzasConfig(data){
+  try{ await window.storage.set('finanzas-config', JSON.stringify(data)); }
+  catch(e){ showToast('No se pudo guardar.'); }
+}
+async function loadFinanzasMonth(monthKey){
+  try{
+    const r = await window.storage.get('finanzas-pay:' + monthKey);
+    return r ? JSON.parse(r.value) : {};
+  }catch(e){ return {}; }
+}
+async function saveFinanzasMonth(monthKey, data){
+  try{ await window.storage.set('finanzas-pay:' + monthKey, JSON.stringify(data)); }
+  catch(e){ showToast('No se pudo guardar.'); }
+}
+async function loadFinanzasActions(){
+  try{
+    const r = await window.storage.get('finanzas-actions');
+    return r ? JSON.parse(r.value) : {};
+  }catch(e){ return {}; }
+}
+async function saveFinanzasActions(data){
+  try{ await window.storage.set('finanzas-actions', JSON.stringify(data)); }
   catch(e){ showToast('No se pudo guardar.'); }
 }
 
@@ -1896,6 +2015,7 @@ async function renderRituales(){
 let nutriView = 'manana'; // 'manana' | 'hoy'
 let groceryFreqFilter = 'Todos';
 let groceryCheckFilter = 'Todos';
+let finanzasDayFilter = 'Todos';
 
 async function renderNutricion(){
   const today = new Date();
@@ -2557,6 +2677,293 @@ async function renderLearning(){
   });
 }
 
+// ---------- Finanzas: render ----------
+async function renderFinanzas(){
+  const today = new Date();
+  const monthKey = getMonthKey(today);
+  const config = await loadFinanzasConfig();
+  const monthData = await loadFinanzasMonth(monthKey);
+  const actionsData = await loadFinanzasActions();
+
+  const totalAll = FINANZAS_EXPENSES.reduce((s,e)=>s+e.amount,0);
+
+  const usd6 = config.usd6 || 0;
+  const usd21 = config.usd21 || 0;
+  const rate = config.rate || 0;
+  const cop6 = usd6 * rate;
+  const cop21 = usd21 * rate;
+  const income = rate ? cop6 + cop21 : null;
+  const surplus = income ? income - totalAll : null;
+
+  const day6Total = FINANZAS_EXPENSES.filter(e=>e.day===6).reduce((s,e)=>s+e.amount,0);
+  const day21Total = FINANZAS_EXPENSES.filter(e=>e.day===21).reduce((s,e)=>s+e.amount,0);
+  const day6Paid = FINANZAS_EXPENSES.filter(e=>e.day===6).reduce((s,e)=> s + (monthData[e.name+'-'+e.day] ? e.amount : 0), 0);
+  const day21Paid = FINANZAS_EXPENSES.filter(e=>e.day===21).reduce((s,e)=> s + (monthData[e.name+'-'+e.day] ? e.amount : 0), 0);
+  const day6Pending = day6Total - day6Paid;
+  const day21Pending = day21Total - day21Paid;
+  const disponible6 = rate ? cop6 - day6Total : null;
+  const disponible21 = rate ? cop21 - day21Total : null;
+
+  function pocketTotal(cat){ return FINANZAS_EXPENSES.filter(e=>e.category===cat).reduce((s,e)=>s+e.amount,0); }
+  function pocketPaid(cat){
+    return FINANZAS_EXPENSES.filter(e=>e.category===cat).reduce((s,e)=> s + (monthData[e.name+'-'+e.day] ? e.amount : 0), 0);
+  }
+
+  app.innerHTML = `
+    <div class="rit-block">
+      <div class="rit-head"><span class="rit-title">Tu ingreso mensual</span></div>
+      <p class="rit-sub">Ganas en USD y te paga en pesos según la TRM del día — por eso es por quincena y con tasa editable, en vez de un número fijo.</p>
+      <div class="card" style="padding:18px;">
+        <div class="row">
+          <div class="field" style="flex:1; min-width:120px;">
+            <label for="usd6Input">Quincena del 6 (USD)</label>
+            <input type="number" id="usd6Input" value="${usd6 || ''}" placeholder="1280">
+          </div>
+          <div class="field" style="flex:1; min-width:120px;">
+            <label for="usd21Input">Quincena del 21 (USD)</label>
+            <input type="number" id="usd21Input" value="${usd21 || ''}" placeholder="1480">
+          </div>
+          <div class="field" style="flex:1; min-width:140px;">
+            <label for="rateInput">Tasa de cambio (COP/USD)</label>
+            <input type="number" id="rateInput" value="${rate || ''}" placeholder="3430">
+          </div>
+        </div>
+        <button class="btn" id="saveIncomeBtn">Guardar</button>
+        ${rate ? `<p class="rit-item-desc" style="margin-top:12px;">Día 6: ${usd6} USD ≈ $${cop6.toLocaleString('es-CO',{maximumFractionDigits:0})} · Día 21: ${usd21} USD ≈ $${cop21.toLocaleString('es-CO',{maximumFractionDigits:0})} · <b>Total: $${income.toLocaleString('es-CO',{maximumFractionDigits:0})}</b></p>` : ''}
+        <p class="assumption" style="margin-top:10px;">Actualiza la tasa cada quincena con la TRM real del día que te pagan — así el superávit de abajo refleja tu plata real, no un promedio.</p>
+      </div>
+    </div>
+
+    <div class="rit-block">
+      <div class="rit-head"><span class="rit-title">Disponible por quincena</span><span class="rit-tag">lo que dejar en tu tarjeta</span></div>
+      <p class="rit-sub">Lo que te queda libre después de cubrir todo lo que toca pagar esa misma quincena — esto es lo que puedes dejar en tu tarjeta para gastar hasta el próximo pago.</p>
+      ${rate ? `
+        <div class="fin-summary" style="grid-template-columns: repeat(2, 1fr);">
+          <div class="pocket-card" style="margin-bottom:0;">
+            <div class="pocket-head">
+              <span class="pocket-title">Quincena del 6</span>
+              <span class="pocket-available" style="color:${disponible6>=0?'var(--folicular)':'var(--menstrual)'};">$${disponible6.toLocaleString('es-CO',{maximumFractionDigits:0})}</span>
+            </div>
+            <div class="rit-item-desc">Ingreso: $${cop6.toLocaleString('es-CO',{maximumFractionDigits:0})}</div>
+            <div class="rit-item-desc">Gastos: $${day6Total.toLocaleString('es-CO')}</div>
+            <div class="rit-item-desc" style="color:var(--folicular);">Pagado: $${day6Paid.toLocaleString('es-CO')}</div>
+            <div class="rit-item-desc" style="color:${day6Pending>0?'var(--menstrual)':'var(--text-muted)'};">Por pagar: $${day6Pending.toLocaleString('es-CO')}</div>
+          </div>
+          <div class="pocket-card" style="margin-bottom:0;">
+            <div class="pocket-head">
+              <span class="pocket-title">Quincena del 21</span>
+              <span class="pocket-available" style="color:${disponible21>=0?'var(--folicular)':'var(--menstrual)'};">$${disponible21.toLocaleString('es-CO',{maximumFractionDigits:0})}</span>
+            </div>
+            <div class="rit-item-desc">Ingreso: $${cop21.toLocaleString('es-CO',{maximumFractionDigits:0})}</div>
+            <div class="rit-item-desc">Gastos: $${day21Total.toLocaleString('es-CO')}</div>
+            <div class="rit-item-desc" style="color:var(--folicular);">Pagado: $${day21Paid.toLocaleString('es-CO')}</div>
+            <div class="rit-item-desc" style="color:${day21Pending>0?'var(--menstrual)':'var(--text-muted)'};">Por pagar: $${day21Pending.toLocaleString('es-CO')}</div>
+          </div>
+        </div>
+        <div class="assumption" style="margin-top:10px;">${disponible6<0 || disponible21<0 ? 'Una de tus quincenas queda en negativo: esa quincena los compromisos pesan más que el ingreso que entra ese día — necesitas cubrir la diferencia con lo que te quede de la otra quincena.' : 'Esto asume que pagas cada compromiso el mismo día que te entra esa quincena. Si pagas algo del día 21 con la plata del día 6, ajusta mentalmente.'} "Pagado" y "Por pagar" se actualizan solos cuando marcas los checks en Tus bolsillos, abajo.</div>
+      ` : `<p class="rit-item-desc">Define tu ingreso arriba (USD + tasa de cambio) para ver cuánto te queda libre en cada quincena.</p>`}
+    </div>
+
+    <div class="rit-block" id="deficitBlock"></div>
+
+    <div class="rit-block">
+      <div class="rit-head"><span class="rit-title">Estructura financiera</span><span class="rit-tag">este mes</span></div>
+      <div class="fin-summary">
+        ${FINANZAS_POCKETS.map(p=>{
+          const t = pocketTotal(p);
+          const pct = income ? Math.round(t/income*100)+'% del ingreso' : Math.round(t/totalAll*100)+'% del gasto fijo';
+          return `<div class="fin-stat"><div class="fin-label">${p}</div><div class="fin-value">$${t.toLocaleString('es-CO')}</div><div class="rit-item-desc">${pct}</div></div>`;
+        }).join('')}
+      </div>
+      <div class="assumption">Benchmark general (50/30/20, ajustado con deudas y Give aparte): 50% necesidades, 30% estilo de vida, 20% ahorro.</div>
+      <div class="meal-card" style="margin-top:14px;">
+        <div class="meal-row"><b>Total comprometido del mes</b>$${totalAll.toLocaleString('es-CO')}</div>
+        ${income ? `<div class="meal-row" style="color:${surplus>=0?'var(--folicular)':'var(--menstrual)'};"><b>${surplus>=0 ? 'Superávit' : 'Déficit'} mensual</b>$${Math.abs(surplus).toLocaleString('es-CO')}</div>` : ''}
+      </div>
+    </div>
+
+    <div class="rit-block">
+      <div class="rit-head"><span class="rit-title">Tus bolsillos</span><span class="rit-tag">marca lo que ya pagaste</span></div>
+      <p class="rit-sub">Cada bolsillo es lo que asignas ese rubro. Al marcar un pago, se resta de lo disponible — así sabes en cualquier momento del mes cuánto te queda de cada uno. Se reinicia solo cada mes.</p>
+      <button class="settings-link" id="resetMonthBtn">Reiniciar este mes</button>
+      <div class="rit-group-label" style="margin-top:14px;">Filtrar por fecha de pago</div>
+      <div class="menu-toggle" id="dayFilters"></div>
+      <div id="pocketsArea" style="margin-top:14px;"></div>
+    </div>
+
+    <div class="rit-block">
+      <div class="rit-head"><span class="rit-title">Portafolio de inversiones</span></div>
+      <div id="investList"></div>
+    </div>
+
+    <div class="rit-block" id="projectionBlock"></div>
+
+    <div class="rit-block">
+      <div class="rit-head"><span class="rit-title">Plan de optimización</span><span class="rit-tag">action items</span></div>
+      <div id="actionsList"></div>
+      <p class="assumption">No soy asesora financiera certificada — esto es una estructura y unas alertas basadas en los números que me compartiste. Antes de decisiones grandes (refinanciar, mover inversiones, aportes voluntarios), confírmalo con tu banco o un asesor financiero/tributario real.</p>
+    </div>
+  `;
+
+  // ---- Diagnóstico de déficit ----
+  const deficitBlock = document.getElementById('deficitBlock');
+  if(income !== null){
+    if(surplus < 0){
+      const sorted = [...FINANZAS_EXPENSES].sort((a,b)=>b.amount-a.amount).slice(0,5);
+      deficitBlock.innerHTML = `
+        <div class="rit-head"><span class="rit-title">Por qué estás en déficit</span><span class="rit-tag">-$${Math.abs(surplus).toLocaleString('es-CO',{maximumFractionDigits:0})}/mes</span></div>
+        <div class="meal-card">
+          <div class="meal-row"><b>Te entra</b>$${income.toLocaleString('es-CO',{maximumFractionDigits:0})}</div>
+          <div class="meal-row"><b>Te comprometes a</b>$${totalAll.toLocaleString('es-CO')}</div>
+          <div class="meal-row" style="color:var(--menstrual);"><b>La diferencia</b>-$${Math.abs(surplus).toLocaleString('es-CO',{maximumFractionDigits:0})}</div>
+        </div>
+        <p class="rit-item-desc" style="margin:10px 0 6px;">Con la tasa de cambio que pusiste, lo que te comprometes a pagar cada mes es más de lo que te entra. Estos son tus 5 rubros más grandes — ahí está la mayor palanca para cerrar la brecha:</p>
+        <ul class="grocery-list">
+          ${sorted.map(e=>`<li><span class="gname">${e.name} <span class="rit-tag" style="margin-left:6px;">${e.category} · día ${e.day}</span></span><span class="gprice">$${e.amount.toLocaleString('es-CO')}</span></li>`).join('')}
+        </ul>
+        <div class="assumption" style="margin-top:10px;">No necesitas eliminar nada de golpe: bajar cualquiera de estos rubros, aunque sea un poco (como ya hicimos con Educación), tiene más impacto que recortar varias cosas pequeñas. Revisa primero "Viaje" y "Ocio y salidas" — son las que más margen de maniobra suelen tener mes a mes.</div>
+      `;
+    } else {
+      deficitBlock.innerHTML = '';
+    }
+  } else {
+    deficitBlock.innerHTML = '';
+  }
+
+  document.getElementById('saveIncomeBtn').onclick = async ()=>{
+    const u6 = parseFloat(document.getElementById('usd6Input').value);
+    const u21 = parseFloat(document.getElementById('usd21Input').value);
+    const r = parseFloat(document.getElementById('rateInput').value);
+    config.usd6 = isNaN(u6) ? 0 : u6;
+    config.usd21 = isNaN(u21) ? 0 : u21;
+    config.rate = isNaN(r) ? 0 : r;
+    await saveFinanzasConfig(config);
+    renderFinanzas();
+  };
+
+  document.getElementById('resetMonthBtn').onclick = async ()=>{
+    await saveFinanzasMonth(monthKey, {});
+    showToast('Mes reiniciado.');
+    renderFinanzas();
+  };
+
+  // ---- Filtro por día de pago ----
+  const dayFilters = document.getElementById('dayFilters');
+  ['Todos','Día 6','Día 21'].forEach(f=>{
+    const btn = document.createElement('button');
+    btn.textContent = f;
+    btn.className = finanzasDayFilter === f ? 'active' : '';
+    btn.onclick = ()=>{ finanzasDayFilter = f; renderFinanzas(); };
+    dayFilters.appendChild(btn);
+  });
+  const dayFilterValue = finanzasDayFilter === 'Día 6' ? 6 : (finanzasDayFilter === 'Día 21' ? 21 : null);
+
+  // ---- Bolsillos ----
+  const pocketsArea = document.getElementById('pocketsArea');
+  FINANZAS_POCKETS.forEach(pocket=>{
+    const allItems = FINANZAS_EXPENSES.filter(e=>e.category===pocket);
+    const items = dayFilterValue ? allItems.filter(e=>e.day===dayFilterValue) : allItems;
+    if(items.length === 0) return; // este bolsillo no tiene pagos en el día filtrado
+
+    const asignado = items.reduce((s,e)=>s+e.amount,0);
+    const pagado = items.reduce((s,e)=> s + (monthData[e.name+'-'+e.day] ? e.amount : 0), 0);
+    const disponible = asignado - pagado;
+    const pct = asignado ? Math.round((pagado/asignado)*100) : 0;
+
+    const card = document.createElement('div');
+    card.className = 'pocket-card';
+    const debtsForPocket = pocket === 'Deudas' ? FINANZAS_DEBTS : [];
+    card.innerHTML = `
+      <div class="pocket-head">
+        <span class="pocket-title">${pocket}</span>
+        <span class="pocket-available">$${disponible.toLocaleString('es-CO')} disponible</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="rit-item-desc" style="margin-bottom:10px;">Pagado $${pagado.toLocaleString('es-CO')} de $${asignado.toLocaleString('es-CO')} asignado${dayFilterValue ? ' (filtrado a día '+dayFilterValue+')' : ''}</div>
+      ${debtsForPocket.map(d=>`
+        <div class="debt-card" style="margin-bottom:10px;">
+          <div class="debt-name">${d.name}</div>
+          <div class="rit-item-desc">Deuda total: $${d.total.toLocaleString('es-CO')} · Tasa: ${d.rate}</div>
+          <div class="rit-item-desc">Cuota ${d.cuotaReal ? 'mínima' : ''}: $${d.cuota.toLocaleString('es-CO')}${d.cuotaReal ? ` · Estás pagando: $${d.cuotaReal.toLocaleString('es-CO')} (abono extra)` : ''}</div>
+          <div class="rit-item-desc">Vas en la cuota ${d.paymentsDone} de ${d.paymentsTotal} (${Math.round(d.paymentsDone/d.paymentsTotal*100)}% del plazo)</div>
+        </div>
+      `).join('')}
+      <div id="pocketItems-${pocket.replace(/[^a-zA-Z]/g,'')}"></div>
+    `;
+    pocketsArea.appendChild(card);
+
+    const itemsContainer = card.querySelector(`#pocketItems-${pocket.replace(/[^a-zA-Z]/g,'')}`);
+    items.forEach(item=>{
+      const checked = !!monthData[item.name + '-' + item.day];
+      const row = document.createElement('div');
+      row.className = 'rit-item' + (checked ? ' done' : '');
+      row.innerHTML = `<label class="rit-row" style="justify-content:space-between; display:flex; align-items:center;">
+          <span style="display:flex; align-items:center; gap:10px;">
+            <input type="checkbox" ${checked ? 'checked' : ''}>
+            <span><div class="rit-item-name">${item.name}</div><div class="rit-item-desc">Día ${item.day}</div></span>
+          </span>
+          <span class="gprice">$${item.amount.toLocaleString('es-CO')}</span>
+        </label>`;
+      row.querySelector('input').onchange = async (e)=>{
+        monthData[item.name + '-' + item.day] = e.target.checked;
+        await saveFinanzasMonth(monthKey, monthData);
+        renderFinanzas();
+      };
+      itemsContainer.appendChild(row);
+    });
+  });
+
+  const investList = document.getElementById('investList');
+  FINANZAS_INVESTMENTS.forEach(inv=>{
+    const card = document.createElement('div');
+    card.className = 'debt-card';
+    card.innerHTML = `
+      <div class="debt-name">${inv.name}</div>
+      <div class="rit-item-desc">Invertido: $${inv.invested.toLocaleString('es-CO')} · Rentabilidad esperada: $${inv.expectedReturn.toLocaleString('es-CO')} · Total: $${inv.total.toLocaleString('es-CO')}</div>
+      <div class="rit-item-desc">${inv.date}</div>
+    `;
+    investList.appendChild(card);
+  });
+
+  // ---- Proyección ----
+  const projectionBlock = document.getElementById('projectionBlock');
+  if(income && surplus !== null){
+    const p6 = surplus * 6;
+    const p12 = surplus * 12;
+    projectionBlock.innerHTML = `
+      <div class="rit-head"><span class="rit-title">Proyección</span><span class="rit-tag">solo efectivo, sin rendimientos</span></div>
+      <div class="meal-card">
+        <div class="meal-row"><b>En 6 meses</b>${surplus>=0 ? '+' : ''}$${p6.toLocaleString('es-CO')}</div>
+        <div class="meal-row"><b>En 12 meses</b>${surplus>=0 ? '+' : ''}$${p12.toLocaleString('es-CO')}</div>
+      </div>
+      <div class="assumption">Proyección simple (superávit × meses), sin contar el crecimiento de tu CDT ni de Happi — esos van aparte, ni la reducción de tu deuda Scotiabank por los abonos extra. ${surplus<0 ? 'Tu flujo actual está en déficit: revisa el plan de optimización abajo antes de comprometer más gastos.' : ''}</div>
+    `;
+  } else {
+    projectionBlock.innerHTML = `
+      <div class="rit-head"><span class="rit-title">Proyección</span></div>
+      <p class="rit-item-desc">Define tu ingreso mensual arriba para ver tu proyección a 6 y 12 meses.</p>
+    `;
+  }
+
+  // ---- Action items ----
+  const actionsList = document.getElementById('actionsList');
+  FINANZAS_ACTIONS.forEach(a=>{
+    const checked = !!actionsData[a.id];
+    const el = document.createElement('div');
+    el.className = 'rit-item' + (checked ? ' done' : '');
+    el.innerHTML = `<label class="rit-row">
+        <input type="checkbox" ${checked ? 'checked' : ''}>
+        <div class="rit-item-desc">${a.text}</div>
+      </label>`;
+    el.querySelector('input').onchange = async (e)=>{
+      actionsData[a.id] = e.target.checked;
+      el.classList.toggle('done', e.target.checked);
+      await saveFinanzasActions(actionsData);
+    };
+    actionsList.appendChild(el);
+  });
+}
+
 // ---------- Tabs ----------
 function setActiveTab(id){
   document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
@@ -2570,6 +2977,7 @@ document.getElementById('tab-nutricion').onclick = ()=>{ setActiveTab('tab-nutri
 document.getElementById('tab-ejercicio').onclick = ()=>{ setActiveTab('tab-ejercicio'); renderEjercicio(); };
 document.getElementById('tab-hogar').onclick = ()=>{ setActiveTab('tab-hogar'); renderHogar(); };
 document.getElementById('tab-learning').onclick = ()=>{ setActiveTab('tab-learning'); renderLearning(); };
+document.getElementById('tab-finanzas').onclick = ()=>{ setActiveTab('tab-finanzas'); renderFinanzas(); };
 
 renderDashboard();
 
