@@ -152,6 +152,75 @@
   @media (max-width: 420px){ .row{ flex-direction: column; align-items: stretch; } .row > *{ min-width: 0 !important; width: 100%; } }
 
   /* ---- Dial ---- */
+  /* ---- Daily 3 columnas ---- */
+  .daily-section{ margin-bottom: 18px; }
+  .col-title{
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    display:block;
+  }
+
+  /* ---- Score semanal ---- */
+  .score-bar{
+    display:flex;
+    gap:4px;
+    margin: 10px 0 6px;
+    align-items:flex-end;
+  }
+  .score-day{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:3px;
+  }
+  .score-day-bar{
+    width:100%;
+    background: var(--surface-2);
+    border-radius: 4px 4px 0 0;
+    transition: height 0.3s ease;
+    min-height: 4px;
+  }
+  .score-day-label{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+  .score-day-pts{
+    font-family:'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+  .score-day.today .score-day-bar{ background: var(--cedar); }
+  .score-day.today .score-day-label, .score-day.today .score-day-pts{ color: var(--cedar); }
+  .score-total{
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-size: 20px;
+  }
+  .score-recs{
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-muted);
+  }
+
+  /* ---- Gym tracker ---- */
+  .gym-table{ width:100%; border-collapse:collapse; font-size: 12.5px; margin-top: 10px; }
+  .gym-table th{ text-align:left; color: var(--text-muted); font-weight:500; font-size:11px; text-transform:uppercase; padding:4px 6px; border-bottom: 1px solid var(--line); }
+  .gym-table td{ padding:6px 6px; border-bottom: 1px solid var(--line); vertical-align:middle; }
+  .gym-table input[type=number]{ width: 52px; background: var(--surface-2); border: 1px solid var(--line); color: var(--text); border-radius:6px; padding:3px 6px; font-size:12px; text-align:center; }
+  .gym-table input[type=checkbox]{ accent-color: var(--accent); width:15px; height:15px; }
+  .gym-note{ font-family:'JetBrains Mono',monospace; font-size:9.5px; color: var(--cedar); }
+
   .intention-card{
     font-family:'Fraunces', serif;
     font-style: italic;
@@ -479,6 +548,39 @@
     margin-bottom: 2px;
   }
   .meal-row b{ color: var(--text-muted); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; margin-right: 6px;}
+  .opt-list{ margin: 0 0 10px 0; padding: 8px 10px 8px 24px; font-size: 13px; line-height: 1.55; background: var(--surface-2); border-radius: 0 0 10px 10px; }
+
+  /* ---- Horario semanal ---- */
+  .sched-list{ background: var(--surface-2); border-radius: 0 0 10px 10px; padding: 6px 0; }
+  .sched-row{ display:flex; gap: 8px; padding: 5px 12px; border-bottom: 1px solid var(--line); align-items:flex-start; }
+  .sched-row:last-child{ border-bottom: none; }
+  .sched-time{ font-family:'JetBrains Mono', monospace; font-size: 11px; color: var(--cedar); min-width: 36px; padding-top: 2px; flex-shrink:0; }
+  .sched-body{ display:flex; flex-direction:column; gap:1px; }
+  .sched-label{ font-size: 13px; }
+  .sched-els{ font-size: 12px; }
+  .sched-note{ font-size: 11.5px; color: var(--text-muted); line-height: 1.4; }
+  .opt-list li{ margin-bottom: 3px; }
+  .opt-list:last-child{ margin-bottom: 0; }
+  .macro-toggle{
+    display:flex;
+    width:100%;
+    justify-content:space-between;
+    align-items:center;
+    gap:8px;
+    background: var(--surface-2);
+    border: none;
+    border-radius: 10px;
+    color: var(--text);
+    padding: 8px 10px;
+    margin-bottom: 2px;
+    font-family: 'Work Sans', sans-serif;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .macro-toggle.open{ border-radius: 10px 10px 0 0; margin-bottom: 0; }
+  .macro-toggle-count{ font-family:'JetBrains Mono', monospace; font-size: 10.5px; color: var(--text-muted); font-weight: 400; margin-left: auto; }
+  .macro-toggle .toggle-icon{ color: var(--accent); font-weight: 600; width: 14px; text-align:center; }
   .prep-box{
     background: var(--surface-2);
     border-radius: 12px;
@@ -684,7 +786,6 @@
 
   <div class="nav">
     <button class="active" id="tab-daily">Daily</button>
-    <button id="tab-rituales">Rituales</button>
     <button id="tab-nutricion">Nutrición</button>
     <button id="tab-ejercicio">Ejercicio</button>
     <button id="tab-hogar">Hogar</button>
@@ -720,38 +821,53 @@
 
 <script>
 // ---------- Polyfill de almacenamiento ----------
-// window.storage solo existe dentro de los artifacts de Claude.ai.
-// Fuera de ahí (como al abrir esto desde GitHub) no existe, y por eso
-// el ciclo, los rituales, etc. parecían no calcular nada: cada lectura
-// fallaba en silencio. Aquí lo recreamos con localStorage para que
-// funcione igual dentro y fuera de Claude.
-if (typeof window.storage === 'undefined') {
-  const NS = 'daily-os:';
+// window.storage solo existe dentro de Claude.ai.
+// Fuera (GitHub Pages, local, etc.) usamos localStorage.
+(function(){
+  if(typeof window.storage !== 'undefined') return; // ya existe, no hacemos nada
+  const NS = 'life-app:';
+  let store;
+  try{
+    localStorage.setItem('__test__','1');
+    localStorage.removeItem('__test__');
+    store = localStorage;
+  }catch(e){
+    // localStorage bloqueado (modo privado extremo, iframe sin permisos, etc.)
+    // Usamos un objeto en memoria como último recurso
+    const mem = {};
+    store = {
+      getItem(k){ return k in mem ? mem[k] : null; },
+      setItem(k,v){ mem[k]=String(v); },
+      removeItem(k){ delete mem[k]; },
+      get length(){ return Object.keys(mem).length; },
+      key(i){ return Object.keys(mem)[i]||null; }
+    };
+  }
   window.storage = {
-    async get(key, shared){
-      const raw = localStorage.getItem(NS + key);
+    async get(key){
+      const raw = store.getItem(NS + key);
       if(raw === null) throw new Error('Key not found: ' + key);
-      return { key, value: raw, shared: !!shared };
+      return { key, value: raw };
     },
-    async set(key, value, shared){
-      localStorage.setItem(NS + key, value);
-      return { key, value, shared: !!shared };
+    async set(key, value){
+      store.setItem(NS + key, value);
+      return { key, value };
     },
-    async delete(key, shared){
-      localStorage.removeItem(NS + key);
-      return { key, deleted: true, shared: !!shared };
+    async delete(key){
+      store.removeItem(NS + key);
+      return { key, deleted: true };
     },
-    async list(prefix, shared){
+    async list(prefix){
       const p = NS + (prefix || '');
       const keys = [];
-      for(let i=0;i<localStorage.length;i++){
-        const k = localStorage.key(i);
-        if(k && k.indexOf(p) === 0) keys.push(k.slice(NS.length));
+      for(let i=0;i<store.length;i++){
+        const k = store.key(i);
+        if(k && k.startsWith(p)) keys.push(k.slice(NS.length));
       }
-      return { keys, prefix, shared: !!shared };
+      return { keys, prefix };
     }
   };
-}
+})();
 
 const app = document.getElementById('app');
 const toastEl = document.getElementById('toast');
@@ -971,81 +1087,136 @@ const NUTRI_TARGETS = {
   objetivo: 'Recomposición corporal'
 };
 
-// ---------- Nutrición: ensalada única que rota cada mes, solo con verduras que te gustan ----------
-const WEEKLY_SALADS = [
-  'Rúcula y zanahoria rallada (80 gr) con vinagreta sin calorías',
-  'Espinaca y pimentón (80 gr) con vinagreta balsámica',
-  'Brócoli al vapor y cebolla morada (80 gr) con vinagreta sin calorías',
-  'Rúcula y brócoli con zanahoria rallada (80 gr) y vinagreta balsámica'
-];
-function getWeeklySalad(date){
-  const ref = new Date('2026-01-05T00:00:00'); // lunes de referencia
-  const weeksSince = Math.floor((date - ref) / (7*86400000));
-  const idx = ((weeksSince % WEEKLY_SALADS.length) + WEEKLY_SALADS.length) % WEEKLY_SALADS.length;
-  return WEEKLY_SALADS[idx];
-}
+// ---------- Nutrición: opciones por comida y por macro (eliges libremente, ya no varía por día) ----------
+// Las cantidades de cada opción ya están pensadas para que, sin importar cuál elijas,
+// el día se mantenga cerca de tu meta diaria — sobre todo la proteína, que ya queda
+// bien cubierta solo con el almuerzo (150 gr de pollo/salmón, indicado por tu plan médico).
+const NUTRITION_OPTIONS = {
+  desayuno: {
+    proteina: [
+      '2 huevos completos (100 gr) + 3 claras (90 gr)',
+      '4 lonjas (80 gr) de jamón de pavo',
+      '80 gr de queso descremado',
+      '1 scoop (25 gr) de proteína',
+      '20 gr de proteína en polvo + 130 ml de yogurt griego + 1 cda (15 gr) de mermelada sin azúcar'
+    ],
+    carbo: [
+      '30 gr de avena en hojuelas + 10 gr de semillas de chía (recomendado la mayoría de los días, por fibra)',
+      '1 arepa (80 gr)'
+    ],
+    fruta: [
+      '70 gr de fresas',
+      '60 gr de piña',
+      '100 gr de frutos rojos',
+      '70 gr de papaya',
+      '70 gr de sandía'
+    ],
+    grasa: [
+      '45 gr de cacao en polvo',
+      '45 gr de queso mozzarella',
+      '45 gr de queso parmesano',
+      '45 gr de queso holandés'
+    ]
+  },
+  almuerzo: {
+    proteina: [
+      '150 gr de pollo',
+      '150 gr de salmón (máx. 1-2 veces por semana — si lo eliges, evita huevo en el desayuno ese día)'
+    ],
+    carbo: [
+      '150 gr de papa en cascos',
+      '150 gr de yuca',
+      '150 gr de arroz (tu carbo ocasional)'
+    ],
+    fibra: [
+      'Rúcula y zanahoria rallada (80 gr) con vinagreta sin calorías',
+      'Espinaca y pimentón (80 gr) con vinagreta balsámica',
+      'Brócoli al vapor y cebolla morada (80 gr) con vinagreta sin calorías',
+      'Rúcula y brócoli con zanahoria rallada (80 gr) y vinagreta balsámica',
+      '+ 1 cda (10 gr) de semillas de chía o linaza molida sobre el plato (súmala a cualquiera de las anteriores)'
+    ]
+  },
+  cena: {
+    base: ['1 tortilla de maíz (30 gr) — siempre va'],
+    proteina: [
+      '120 gr de pollo desmechado + 20 gr de queso',
+      '120 gr de pollo + 30 gr de aguacate',
+      '1 lata pequeña (120 gr) de atún en agua + 30 gr de aguacate',
+      '3 huevos revueltos (150 gr)',
+      '4 lonjas (80 gr) de jamón de pavo + 20 gr de queso'
+    ]
+  },
+  mediaManana: [
+    'Waffle con 30 gr de avena + 15 gr de proteína en polvo — ideal en tus días de entreno (lunes, miércoles, sábado)',
+    'Sándwich: 60 gr de pan integral + 1 lonja (20 gr) de queso + pimentón, cebolla y espinaca salteada (60 gr)'
+  ],
+  mediaTarde: [
+    '120 gr de yogurt griego + 1 cda (15 gr) de mermelada sin azúcar',
+    '1 porción (200 gr) de gelatina sin calorías',
+    '20 gr de proteína en shake con agua o leche deslactosada'
+  ]
+};
 
 // ---------- Nutrición: menú semanal fijo (mismo cada semana, así la lista de mercado es predecible) ----------
 // Snacks de media mañana: en tus 3 días de entreno (lun/mié/sáb) llevan algo de proteína de recuperación;
 // el resto de días priorizan volumen y fibra (pan integral + vegetales) en vez de más proteína,
 // porque desayuno+almuerzo+cena ya cubren bien tu meta diaria.
-const WEEK_MENU = {
-  1: { // Lunes — entreno: natación
-    desayuno: { proteina:'2 huevos completos (100 gr) + 3 claras (90 gr)', carbo:'30 gr de avena en hojuelas + 10 gr de semillas de chía', fruta:'70 gr de fresas', grasa:'45 gr de cacao en polvo' },
-    almuerzo: { proteina:'150 gr de pollo', carbo:'150 gr de papa en cascos', fibraExtra:'1 cda (10 gr) de semillas de linaza molida sobre el plato' },
-    cena: '1 tortilla de maíz (30 gr) + 120 gr de pollo desmechado + 20 gr de queso',
-    mediaManana: 'Waffle con 30 gr de avena + 15 gr de proteína en polvo (día de entreno: te ayuda a recuperar)',
-    mediaTarde: '120 gr de yogurt griego + 1 cda (15 gr) de mermelada sin azúcar',
-    prep: ['Porciona 150 gr y 120 gr de pollo para almuerzo y cena.', 'Lava la fruta de mañana antes de dormir.']
-  },
-  2: { // Martes — sin entreno dirigido
-    desayuno: { proteina:'4 lonjas (80 gr) de jamón de pavo', carbo:'30 gr de avena en hojuelas + 10 gr de semillas de chía', fruta:'60 gr de piña', grasa:'45 gr de queso mozzarella' },
-    almuerzo: { proteina:'150 gr de pollo', carbo:'150 gr de yuca', fibraExtra:'1 cda (10 gr) de semillas de chía sobre el plato' },
-    cena: '1 tortilla de maíz (30 gr) + 1 lata pequeña (120 gr) de atún en agua + 30 gr de aguacate',
-    mediaManana: 'Sándwich: 60 gr de pan integral + 1 lonja (20 gr) de queso + pimentón, cebolla y espinaca salteada (60 gr)',
-    mediaTarde: '1 porción (200 gr) de gelatina sin calorías',
-    prep: ['Cocina la yuca con anticipación: aguanta lista en la nevera 2-3 días.', 'Saltea el pimentón, cebolla y espinaca para el sándwich y guárdalos en un recipiente.']
-  },
-  3: { // Miércoles — entreno: baile, día de salmón en el almuerzo
-    desayuno: { proteina:'20 gr de proteína en polvo + 130 ml de yogurt griego + 1 cda (15 gr) de mermelada sin azúcar (sin huevo: hoy usas salmón al almuerzo)', carbo:'1 arepa (80 gr)', fruta:'100 gr de frutos rojos', grasa:'45 gr de queso parmesano' },
-    almuerzo: { proteina:'150 gr de salmón', carbo:'150 gr de papa en cascos', fibraExtra:'1 cda (10 gr) de semillas de linaza molida sobre el plato' },
-    cena: '1 tortilla de maíz (30 gr) + 3 huevos revueltos (150 gr)',
-    mediaManana: 'Waffle con 30 gr de avena + 15 gr de proteína en polvo (día de entreno: te ayuda a recuperar)',
-    mediaTarde: '20 gr de proteína en shake con agua o leche deslactosada',
-  },
-  4: { // Jueves — sin entreno dirigido
-    desayuno: { proteina:'80 gr de queso descremado', carbo:'30 gr de avena en hojuelas + 10 gr de semillas de chía', fruta:'70 gr de papaya', grasa:'45 gr de cacao en polvo' },
-    almuerzo: { proteina:'150 gr de pollo', carbo:'150 gr de yuca', fibraExtra:'1 cda (10 gr) de semillas de chía sobre el plato' },
-    cena: '1 tortilla de maíz (30 gr) + 4 lonjas (80 gr) de jamón de pavo + 20 gr de queso',
-    mediaManana: 'Sándwich: 60 gr de pan integral + 1 lonja (20 gr) de queso + pimentón, cebolla y espinaca salteada (60 gr)',
-    mediaTarde: '1 porción (200 gr) de gelatina sin calorías',
-    prep: ['Prepara el jamón y el queso para la cena.', 'Si no quedó yuca del martes, cocina de nuevo hoy.']
-  },
-  5: { // Viernes — sin entreno dirigido
-    desayuno: { proteina:'1 scoop (25 gr) de proteína', carbo:'30 gr de avena en hojuelas + 10 gr de semillas de chía', fruta:'100 gr de frutos rojos', grasa:'45 gr de queso holandés' },
-    almuerzo: { proteina:'150 gr de pollo', carbo:'150 gr de papa en cascos', fibraExtra:'1 cda (10 gr) de semillas de linaza molida sobre el plato' },
-    cena: '1 tortilla de maíz (30 gr) + 120 gr de pollo + 30 gr de aguacate',
-    mediaManana: 'Sándwich: 60 gr de pan integral + 1 lonja (20 gr) de queso + pimentón, cebolla y espinaca salteada (60 gr)',
-    mediaTarde: '120 gr de yogurt griego + 1 cda (15 gr) de mermelada sin azúcar',
-    prep: ['Pesa la papa para el almuerzo de mañana.', 'Deja listo el pollo de la cena desde la mañana.']
-  },
-  6: { // Sábado — entreno: pesas (glúteo)
-    desayuno: { proteina:'2 huevos completos (100 gr) + 3 claras (90 gr)', carbo:'30 gr de avena en hojuelas + 10 gr de semillas de chía', fruta:'60 gr de piña', grasa:'45 gr de cacao en polvo' },
-    almuerzo: { proteina:'150 gr de pollo', carbo:'150 gr de arroz (tu carbo ocasional)', fibraExtra:'1 cda (10 gr) de semillas de chía sobre el plato' },
-    cena: '1 tortilla de maíz (30 gr) + 120 gr de pollo + 30 gr de aguacate',
-    mediaManana: 'Waffle con 30 gr de avena + 15 gr de proteína en polvo (día de entreno: te ayuda a recuperar)',
-    mediaTarde: '1 porción (200 gr) de gelatina sin calorías',
-    prep: ['Cocina el arroz para hoy mismo.', 'Hoy entrenas pesas: deja el pollo listo desde temprano para no llegar sin comer post-entreno.']
-  },
-  0: { // Domingo — descanso y prep de la semana
-    desayuno: { proteina:'4 lonjas (80 gr) de jamón de pavo', carbo:'30 gr de avena en hojuelas + 10 gr de semillas de chía', fruta:'70 gr de sandía', grasa:'45 gr de queso mozzarella' },
-    almuerzo: { proteina:'150 gr de pollo', carbo:'150 gr de yuca', fibraExtra:'1 cda (10 gr) de semillas de linaza molida sobre el plato' },
-    cena: '1 tortilla de maíz (30 gr) + 3 huevos revueltos (150 gr) + 20 gr de queso',
-    mediaManana: 'Sándwich: 60 gr de pan integral + 1 lonja (20 gr) de queso + pimentón, cebolla y espinaca salteada (60 gr)',
-    mediaTarde: '120 gr de yogurt griego + 1 cda (15 gr) de mermelada sin azúcar',
-    prep: ['Día ideal para porcionar y dejar listo el pollo de toda la semana.', 'Saltea una buena cantidad de pimentón, cebolla y espinaca para tener lista toda la semana.']
-  }
-};
+
+function optToggle(label, arr, uid){
+  return `
+    <button class="macro-toggle" data-target="${uid}" type="button">
+      <span>${label}</span><span class="macro-toggle-count">${arr.length} opciones</span><span class="toggle-icon" id="icon-${uid}">+</span>
+    </button>
+    <ul class="opt-list" id="${uid}" style="display:none;">${arr.map(o=>`<li>${o}</li>`).join('')}</ul>
+  `;
+}
+function buildMealOptionsHTML(prefix){
+  let n = 0;
+  const id = ()=> `${prefix}-mo-${n++}`;
+  return `
+    <div class="meal-card">
+      <div class="meal-name">Desayuno</div>
+      ${optToggle('Proteína', NUTRITION_OPTIONS.desayuno.proteina, id())}
+      ${optToggle('Carbo', NUTRITION_OPTIONS.desayuno.carbo, id())}
+      ${optToggle('Fruta', NUTRITION_OPTIONS.desayuno.fruta, id())}
+      ${optToggle('Grasa', NUTRITION_OPTIONS.desayuno.grasa, id())}
+    </div>
+    <div class="meal-card">
+      <div class="meal-name">Almuerzo</div>
+      ${optToggle('Proteína', NUTRITION_OPTIONS.almuerzo.proteina, id())}
+      ${optToggle('Carbo', NUTRITION_OPTIONS.almuerzo.carbo, id())}
+      ${optToggle('Fibra', NUTRITION_OPTIONS.almuerzo.fibra, id())}
+    </div>
+    <div class="meal-card">
+      <div class="meal-name">Media mañana</div>
+      ${optToggle('Opciones', NUTRITION_OPTIONS.mediaManana, id())}
+    </div>
+    <div class="meal-card">
+      <div class="meal-name">Media tarde</div>
+      ${optToggle('Opciones', NUTRITION_OPTIONS.mediaTarde, id())}
+    </div>
+    <div class="meal-card">
+      <div class="meal-name">Cena</div>
+      <div class="rit-item-desc" style="margin-bottom:6px;">${NUTRITION_OPTIONS.cena.base[0]}</div>
+      ${optToggle('Proteína', NUTRITION_OPTIONS.cena.proteina, id())}
+    </div>
+  `;
+}
+
+function wireMacroToggles(container){
+  if(!container) return;
+  container.querySelectorAll('.macro-toggle').forEach(btn=>{
+    btn.onclick = ()=>{
+      const list = document.getElementById(btn.dataset.target);
+      const icon = document.getElementById('icon-' + btn.dataset.target);
+      if(!list) return;
+      const isOpen = list.style.display !== 'none';
+      list.style.display = isOpen ? 'none' : 'block';
+      if(icon) icon.textContent = isOpen ? '+' : '−';
+      btn.classList.toggle('open', !isOpen);
+    };
+  });
+}
 
 const SUPPLEMENTS = [
   {key:'supp-am', moment:'Mañana', name:'Vitamina D + Probióticos'},
@@ -1058,84 +1229,72 @@ const WATER_STEP_ML = 200; // tamaño de cada incremento
 
 // ---------- Mercado como inventario, con frecuencia de compra ----------
 const GROCERY_INVENTORY = [
-  {name:'Pollo', qty:'8 porciones de 170 gr (~1.260 gr que necesitas)', freq:'Semanal', cost:8*5300},
-  {name:'Salmón', qty:'1 porción de 350 gr (sobra para otra comida)', freq:'Semanal', cost:22000},
-  {name:'Jars de verduras (rúcula, brócoli, zanahoria, pimentón, cebolla, espinaca)', qty:'2 jars de 500 gr aprox.', freq:'Semanal', cost:2*8300},
-  {name:'Papa', qty:'~450 gr (3 almuerzos: lunes, miércoles, viernes)', freq:'Semanal'},
-  {name:'Yuca', qty:'~450 gr (3 almuerzos: martes, jueves, domingo)', freq:'Semanal'},
-  {name:'Arroz', qty:'150 gr (solo la porción del sábado)', freq:'Semanal'},
-  {name:'Papaya, piña, frutos rojos, fresas, sandía', qty:'porciones pequeñas, solo para desayuno', freq:'Semanal'},
-  {name:'Huevos', qty:'1 docena', freq:'Semanal'},
-  {name:'Jamón de pavo bajo en sodio', qty:'1 paquete', freq:'Semanal'},
+  {name:'Pollo', qty:'6-8 porciones de 170 gr (almuerzo y cenas)', freq:'Semanal', cost:7*5300},
+  {name:'Huevos', qty:'1 docena (desayuno y cena)', freq:'Semanal'},
+  {name:'Jamón de pavo', qty:'1 paquete (desayuno y cena)', freq:'Semanal'},
   {name:'Atún en lata', qty:'1 lata pequeña', freq:'Semanal'},
+  {name:'Salmón', qty:'1 porción de 350 gr (1 vez por semana)', freq:'Semanal', cost:22000},
   {name:'Yogurt griego', qty:'~500 gr', freq:'Semanal'},
+  {name:'Jars de verduras (rúcula, brócoli, zanahoria, pimentón, cebolla, espinaca)', qty:'2 jars de 500 gr', freq:'Semanal', cost:2*8300},
+  {name:'Papa', qty:'~600 gr', freq:'Semanal'},
+  {name:'Yuca', qty:'~600 gr', freq:'Semanal'},
   {name:'Tortillas de maíz', qty:'7 unidades (una por cena)', freq:'Semanal'},
-  {name:'Pan integral', qty:'1 paquete', freq:'Quincenal'},
-  {name:'Proteína en polvo (scoop)', qty:'1 tarro', freq:'Mensual'},
-  {name:'Avena en hojuelas', qty:'1 paquete (la usas casi todos los días, revisa que no se acabe)', freq:'Mensual'},
-  {name:'Arepas', qty:'1 paquete (para el miércoles)', freq:'Mensual'},
-  {name:'Mermelada sin azúcar añadida', qty:'1 frasco', freq:'Mensual'},
+  {name:'Frutas (fresas, piña, frutos rojos, papaya, sandía)', qty:'1 porción de las que quieras tener', freq:'Semanal'},
+  {name:'Arroz', qty:'500 gr (carbo ocasional)', freq:'Mensual'},
+  {name:'Pan integral', qty:'1 paquete', freq:'Mensual'},
+  {name:'Arepas', qty:'1 paquete', freq:'Mensual'},
+  {name:'Proteína en polvo', qty:'1 tarro', freq:'Mensual'},
+  {name:'Avena en hojuelas', qty:'1-2 paquetes (casi diario)', freq:'Mensual'},
+  {name:'Semillas de chía', qty:'1 bolsa (casi diario)', freq:'Mensual'},
+  {name:'Linaza molida', qty:'1 bolsa (diario en almuerzo)', freq:'Mensual'},
+  {name:'Mermelada sin azúcar', qty:'1 frasco', freq:'Mensual'},
   {name:'Cacao en polvo', qty:'1 bolsa', freq:'Mensual'},
-  {name:'Quesos: mozzarella, parmesano, holandés, descremado', qty:'en rotación', freq:'Mensual'},
-  {name:'Gelatina sin calorías', qty:'varias porciones', freq:'Mensual'},
-  {name:'Vinagre de sidra de manzana', qty:'1 botella', freq:'Mensual'},
-  {name:'Vinagretas (sin calorías y balsámica)', qty:'1 de cada', freq:'Mensual'},
-  {name:'Semillas de chía y linaza molida', qty:'1 bolsa de cada', freq:'Mensual'},
-  {name:'Vitamina D3, probióticos, omega 3, glicinato de magnesio', qty:'1 frasco de cada', freq:'Mensual'}
+  {name:'Quesos (mozzarella, parmesano, holandés, descremado)', qty:'rotación según semana', freq:'Mensual'},
+  {name:'Gelatina sin calorías', qty:'1 caja', freq:'Mensual'},
+  {name:'Vinagretas (balsámica y sin calorías)', qty:'1 de cada', freq:'Mensual'},
+  {name:'Suplementos (vitamina D3, probióticos, omega 3, glicinato de magnesio)', qty:'1 frasco de cada', freq:'Mensual'}
 ];
 
 // ---------- Ejercicio: rutina semanal optimizada ----------
 // El sábado solo entrenas glúteo (fijo, sin rotación). Como eso deja sin estímulo directo
 // el tren superior y los cuádriceps/isquios el resto de la semana, los 20 min de martes y
 // viernes se reasignan a esos grupos en vez de repetir pilates todos los días.
-const GYM_DAY_GLUTEO = {
-  title: 'Glúteo',
-  items: [
-    'Calentamiento: movilidad de cadera, rodilla y tobillo + abducción/aducción con máquina o banda.',
-    'Patada de rana con banda (3s de contracción), 4 series de 10.',
-    'Hip thrust en máquina, 4 series de 16.',
-    'Patada de glúteo en polea cruzada, 3 series de 12.',
-    'Extensión de cuádriceps, 4 series de 12.',
-    'Sentadilla sumo, 4 series de 12.',
-    'Curl femoral acostado, 2 series de 16.',
-    'Abdomen (rutina de Pautas).'
-  ]
-};
+// ---------- Ejercicio: rutina de glúteos en gym (jueves) ----------
+const GYM_GLUTEO_ROUTINE = [
+  { key:'glute_bridge', label:'Activación: Glute Bridge', sets:2, reps:20, weight:0, note:'Activación' },
+  { key:'lateral_band', label:'Activación: Lateral Band Walks', sets:2, reps:20, weight:0, note:'Activación' },
+  { key:'kickback', label:'Glute Kickback en el piso', sets:3, reps:20, weight:0 },
+  { key:'hip_thrust', label:'Hip Thrust', sets:4, reps:24, weight:20 },
+  { key:'deadlifts', label:'Deadlifts', sets:3, reps:12, weight:20 },
+  { key:'lateral_lunge', label:'Lateral Lunge', sets:3, reps:30, weight:0 },
+  { key:'stretching', label:'Stretching', sets:1, reps:0, weight:0, note:'Cierre' }
+];
 
 const WEEKDAY_EXERCISE = {
-  1: { type:'fijo', title:'Natación', detail:'Tu día fijo de natación — se mantiene tal cual.' },
-  2: { type:'boost', title:'Pilates · Tren superior · 20 min', items:[
-      'Calentamiento: rotación de hombros y movilidad de muñecas, 1 minuto.',
-      'Swan (extensión de espalda alta), 3 series de 8.',
-      'Plancha alta-baja (entrando y saliendo del antebrazo), 3 series de 10.',
-      'Fondos de tríceps en silla, 3 series de 12.',
-      'Swimming (extensión de brazo y pierna opuesta), 3 series de 10 por lado.',
-      'Círculos de brazo (con o sin peso ligero), 2 series de 15.'
-    ], why:'Como el sábado solo entrenas glúteo, este es el único momento de tu semana que trabaja brazos, hombros y espalda — sin esto, esa zona no recibiría estímulo. Y como es pilates, sabes que sí lo vas a hacer.' },
-  3: { type:'fijo', title:'Baile', detail:'Tu día fijo de baile — se mantiene tal cual.' },
-  4: { type:'boost', title:'Pilates · Abdomen · 20 min', items:[
-      'The Hundred (pulsos de brazo respirando), 1 serie de 100 pulsos.',
-      'Roll-Up (o roll-up asistido con manos en los muslos), 3 series de 8.',
-      'Criss-Cross, 3 series de 12 por lado.',
-      'Double Leg Stretch, 3 series de 10.',
-      'Plancha con toque de talón alternado, 3 series de 12.'
-    ], why:'Va directo a tu meta de tonificar abdomen — el core es donde el pilates rinde más.' },
-  5: { type:'boost', title:'Pilates · Piernas y glúteo · 20 min', items:[
-      'Calentamiento: movilidad de cadera, 1 minuto.',
-      'Side Kick series (elevaciones de pierna de lado), 3 series de 12 por lado.',
-      'Shoulder Bridge (puente con elevación de cadera), 3 series de 12.',
-      'Single Leg Circle, 2 series de 8 por lado.',
-      'Clamshell con banda o sin banda, 3 series de 15 por lado.',
-      'Sentadilla pilates (plié), 3 series de 12.'
-    ], why:'El sábado solo trabajas glúteo en el gym, así que aquí entran cuádriceps e isquiotibiales para que no se queden sin estímulo — todo en formato pilates, para que sí lo cumplas.' },
-  6: { type:'pesas', title:'Glúteo', detail:'Tu día fijo de pesas — siempre glúteo.' },
-  0: { type:'boost', title:'Pilates · Movilidad y restaurativo · 20 min', items:[
-      'Spine Stretch Forward, 3 series de 6.',
-      'Saw, 3 series de 6 por lado.',
-      'Cat-Cow, 8 repeticiones lentas.',
-      'Mermaid Stretch, 2 series de 30 seg por lado.',
-      'Postura del niño (child\'s pose) para cerrar, 1 minuto.'
-    ], why:'Recuperación activa después de las pesas del sábado, para llegar fresca al lunes de natación.' }
+  1: { title:'Lunes', sessions:[
+    { time:'AM', name:'Pilates' },
+    { time:'PM', name:'Afro class' }
+  ]},
+  2: { title:'Martes', sessions:[
+    { time:'AM', name:'Pilates' },
+    { time:'PM', name:'Champeta' }
+  ]},
+  3: { title:'Miércoles', sessions:[
+    { time:'AM', name:'Pilates' },
+    { time:'PM', name:'Coreografía' }
+  ]},
+  4: { title:'Jueves', sessions:[
+    { time:'PM', name:'Gym · Glúteos' }
+  ]},
+  5: { title:'Viernes', sessions:[
+    { time:'AM', name:'Caminata' }
+  ]},
+  6: { title:'Sábado', sessions:[
+    { time:'AM', name:'Yoga' }
+  ]},
+  0: { title:'Domingo', sessions:[
+    { time:'AM', name:'Yoga restaurativo' }
+  ]}
 };
 
 function getWeekKey(date){
@@ -1400,6 +1559,59 @@ async function saveLearningDay(dateKey, data){
   catch(e){ showToast('No se pudo guardar.'); }
 }
 
+async function loadGymSession(dateKey){
+  try{
+    const r = await window.storage.get('gym:' + dateKey);
+    return r ? JSON.parse(r.value) : {};
+  }catch(e){ return {}; }
+}
+async function saveGymSession(dateKey, data){
+  try{ await window.storage.set('gym:' + dateKey, JSON.stringify(data)); }
+  catch(e){ showToast('No se pudo guardar.'); }
+}
+
+// Score semanal: cuenta checks por día en toda la app
+const SCORE_MAX_PER_DAY = 10; // puntos máximos posibles por día
+
+function calcDayScore(ritualDay, nutriDay, hogarDay, exerciseDay, learningDay, hogarTasks){
+  let score = 0;
+  // Rituales body (4 items)
+  ['skincareAM','skincarePM','sunscreen','hair'].forEach(k=>{ if(ritualDay[k]) score++; });
+  // Suplementos (3)
+  if(nutriDay.supplements){
+    ['supp-am','supp-lunch','supp-night'].forEach(k=>{ if(nutriDay.supplements[k]) score++; });
+  }
+  // Agua (≥1200ml = 1 punto)
+  if((nutriDay.water||0) >= 1200) score++;
+  // Ejercicio
+  if(exerciseDay.done) score++;
+  // Learning
+  if(learningDay.habit) score++;
+  // Hogar: al menos 1 tarea completada
+  if(hogarTasks && hogarTasks.some(t=> hogarDay[t.key+'::'+t.name])) score++;
+  return Math.min(score, SCORE_MAX_PER_DAY);
+}
+
+async function loadWeekScores(today){
+  const scores = {};
+  const base = new Date(today);
+  const dow = (base.getDay()+6)%7;
+  base.setDate(base.getDate() - dow); // lunes de esta semana
+  for(let i=0;i<7;i++){
+    const d = new Date(base);
+    d.setDate(base.getDate()+i);
+    const dk = d.toISOString().slice(0,10);
+    const [rit, nutri, hogar, exercise, learning] = await Promise.all([
+      loadRitualDay(dk), loadNutriDay(dk), loadHogarDay(dk), loadExerciseDay(dk), loadLearningDay(dk)
+    ]);
+    nutri.supplements = nutri.supplements||{};
+    nutri.water = nutri.water||0;
+    const tasks = getHogarTasks(d);
+    scores[dk] = calcDayScore(rit, nutri, hogar, exercise, learning, tasks);
+  }
+  return scores;
+}
+
 function getMonthKey(date){
   return date.toISOString().slice(0,7); // YYYY-MM
 }
@@ -1476,6 +1688,195 @@ function renderSetup(){
 }
 
 // ---------- Daily: intención del día ----------
+// ---------- Horario semanal ideal ----------
+// Diseñado con el mindset de "mejor versión": lo importante primero (AM),
+// equilibrio de los 4 elementos cada día, trabajo 7-4pm con pausas de 10-15 min,
+// desayuno 9am, almuerzo 1:45pm, cena 7pm, clases de baile con 30 min de traslado,
+// aprendizaje de inglés todos los días, SQL los sábados, bajo y pintura en la semana.
+const WEEKLY_SCHEDULE = [
+  {
+    day: 'Lunes', dow: 1, tag: 'Afro class 6pm',
+    blocks: [
+      { time:'5:45', label:'Despertar · agua tibia', elements:['🌊'], note:'Arranca el día con intención, no con el teléfono.' },
+      { time:'5:50', label:'Pranayama AM · 10 min', elements:['💨'], note:'Nadi Shodhana o la técnica que corresponde a tu fase del ciclo.' },
+      { time:'6:00', label:'Pilates AM · 20 min', elements:['🔥'], note:'Lunes corresponde tren superior en pilates.' },
+      { time:'6:20', label:'Skincare AM + arreglo', elements:[], note:'Protector solar siempre. Si es lunes: isotretinoína.' },
+      { time:'6:40', label:'Journaling · 5 min', elements:['🌊'], note:'Tres cosas de hoy que importan. Nada más.' },
+      { time:'7:00', label:'▶ TRABAJO', elements:[], note:'' },
+      { time:'9:00', label:'Desayuno · 20 min', elements:[], note:'Proteína + avena con chía. Come lejos de la pantalla si puedes.' },
+      { time:'10:30', label:'Pausa · inglés · 15 min', elements:[], note:'Shadowing o repaso de chunks — la pausa más productiva del día.' },
+      { time:'13:45', label:'Almuerzo · 30 min', elements:[], note:'Sin pantallas. Sal del escritorio aunque sea un minuto.' },
+      { time:'16:00', label:'◼ FIN TRABAJO', elements:[], note:'' },
+      { time:'16:00', label:'Hogar + prep ligera', elements:['🌿'], note:'Lo mínimo de hogar: platos, lo que toque ese día.' },
+      { time:'17:30', label:'Salir → Afro class', elements:[], note:'30 min de traslado. Lleva agua y snack si lo necesitas.' },
+      { time:'18:00', label:'Afro class · 1 hora', elements:['🔥'], note:'Baile como práctica de fuego: presencia, expresión, alegría.' },
+      { time:'19:00', label:'Regreso + cena · 7pm', elements:[], note:'Cena algo ligero — la clase ya fue tu fuego del día.' },
+      { time:'19:30', label:'Inglés · 30 min', elements:[], note:'Speaking o contenido largo — aprovecha la energía post-clase.' },
+      { time:'20:00', label:'Lectura o bajo o pintura', elements:['🌊'], note:'Sin obligación — lo que te llame. Esto es tu tiempo.' },
+      { time:'21:30', label:'Skincare PM + wind down', elements:[], note:'Sin pantallas brillantes. Magnesio antes de dormir.' },
+      { time:'22:00', label:'Dormir', elements:[], note:'Prioriza esto por encima de seguir en el teléfono.' }
+    ]
+  },
+  {
+    day: 'Martes', dow: 2, tag: 'Champeta 7pm',
+    blocks: [
+      { time:'5:45', label:'Despertar · agua tibia', elements:['🌊'], note:'' },
+      { time:'5:50', label:'Pranayama AM · 10 min', elements:['💨'], note:'Kapalabhati suave — energía para el día.' },
+      { time:'6:00', label:'Pilates AM · 20 min', elements:['🔥'], note:'Martes: piernas y glúteo en pilates.' },
+      { time:'6:20', label:'Skincare AM + arreglo', elements:[], note:'' },
+      { time:'6:40', label:'Journaling · 5 min', elements:['🌊'], note:'' },
+      { time:'7:00', label:'▶ TRABAJO', elements:[], note:'' },
+      { time:'9:00', label:'Desayuno · 20 min', elements:[], note:'' },
+      { time:'10:30', label:'Pausa · inglés · 15 min', elements:[], note:'Shadowing con clip corto.' },
+      { time:'13:45', label:'Almuerzo · 30 min', elements:[], note:'' },
+      { time:'16:00', label:'◼ FIN TRABAJO', elements:[], note:'' },
+      { time:'16:00', label:'Bajo · 1h (semanal)', elements:['🌿'], note:'Tu hora semanal de bajo — va aquí cuando le toque. TIERRA: disciplina creativa.' },
+      { time:'17:00', label:'Hogar / descanso', elements:[], note:'' },
+      { time:'18:30', label:'Salir → Champeta', elements:[], note:'30 min de traslado.' },
+      { time:'19:00', label:'Champeta · 1-1.5h', elements:['🔥'], note:'Ritmo, cultura, presencia.' },
+      { time:'20:30', label:'Regreso + cena (tarde)', elements:[], note:'Cena liviana: cena pre-preparada o algo simple.' },
+      { time:'21:00', label:'Wind down · skincare PM', elements:[], note:'' },
+      { time:'22:00', label:'Dormir', elements:[], note:'' }
+    ]
+  },
+  {
+    day: 'Miércoles', dow: 3, tag: 'Coreografía 6pm',
+    blocks: [
+      { time:'5:45', label:'Despertar · agua tibia', elements:['🌊'], note:'' },
+      { time:'5:50', label:'Pranayama AM · 10 min', elements:['💨'], note:'Ujjayi — energía sostenida.' },
+      { time:'6:00', label:'Pilates AM · 20 min', elements:['🔥'], note:'Miércoles: abdomen en pilates.' },
+      { time:'6:20', label:'Skincare AM + arreglo', elements:[], note:'Hoy es día de salmón: desayuno sin huevo.' },
+      { time:'6:40', label:'Journaling · 5 min', elements:['🌊'], note:'' },
+      { time:'7:00', label:'▶ TRABAJO', elements:[], note:'' },
+      { time:'9:00', label:'Desayuno · 20 min', elements:[], note:'' },
+      { time:'10:30', label:'Pausa · inglés business · 15 min', elements:[], note:'Jueves es tu día de speaking business — hoy practica el vocabulario.' },
+      { time:'13:45', label:'Almuerzo · 30 min', elements:[], note:'' },
+      { time:'16:00', label:'◼ FIN TRABAJO', elements:[], note:'' },
+      { time:'16:00', label:'Hogar + pre-cena preparada', elements:['🌿'], note:'Deja la cena lista antes de salir.' },
+      { time:'17:30', label:'Salir → Coreografía', elements:[], note:'30 min de traslado.' },
+      { time:'18:00', label:'Coreografía · 1 hora', elements:['🔥'], note:'Técnica, expresión, disfrute.' },
+      { time:'19:00', label:'Regreso + cena · 7pm', elements:[], note:'' },
+      { time:'19:30', label:'Inglés · speaking casual · 30 min', elements:[], note:'Tandem/HelloTalk o práctica con voz.' },
+      { time:'20:00', label:'Lectura o meditación', elements:['🌊'], note:'Cierra el día con calma — hoy ya hiciste mucho.' },
+      { time:'21:30', label:'Skincare PM + wind down', elements:[], note:'' },
+      { time:'22:00', label:'Dormir', elements:[], note:'' }
+    ]
+  },
+  {
+    day: 'Jueves', dow: 4, tag: 'Gym glúteos PM',
+    blocks: [
+      { time:'5:45', label:'Despertar · agua tibia', elements:['🌊'], note:'' },
+      { time:'5:50', label:'Pranayama AM · 10 min', elements:['💨'], note:'Nadi Shodhana — equilibrio antes del día.' },
+      { time:'6:00', label:'Journaling profundo · 15 min', elements:['🌊'], note:'Jueves sin pilates: el elemento agua lidera la mañana. Escribe más.' },
+      { time:'6:15', label:'Skincare AM + arreglo', elements:[], note:'' },
+      { time:'7:00', label:'▶ TRABAJO', elements:[], note:'' },
+      { time:'9:00', label:'Desayuno · 20 min', elements:[], note:'' },
+      { time:'10:30', label:'Pausa · inglés business · 15 min', elements:[], note:'Speaking business: narra un insight en voz alta, 2 minutos.' },
+      { time:'13:45', label:'Almuerzo · 30 min', elements:[], note:'' },
+      { time:'16:00', label:'◼ FIN TRABAJO', elements:[], note:'' },
+      { time:'16:30', label:'Gym glúteos · 1.5h', elements:['🔥','🌿'], note:'Usa el tracker de rutina en la pestaña Ejercicio.' },
+      { time:'18:00', label:'Regreso + ducha', elements:[], note:'' },
+      { time:'19:00', label:'Cena', elements:[], note:'Post-entreno: prioriza proteína.' },
+      { time:'19:30', label:'Lectura · 30 min', elements:['🌊'], note:'' },
+      { time:'20:00', label:'Pintura · 1h (semanal)', elements:['🌿'], note:'Tu hora semanal de pintura — si le toca esta semana.' },
+      { time:'21:30', label:'Skincare PM', elements:[], note:'' },
+      { time:'22:00', label:'Dormir', elements:[], note:'' }
+    ]
+  },
+  {
+    day: 'Viernes', dow: 5, tag: 'Caminata AM + tarde libre',
+    blocks: [
+      { time:'5:30', label:'Despertar (un poco antes)', elements:[], note:'Hoy la caminata es tu ritual de apertura.' },
+      { time:'5:35', label:'Pranayama · 10 min', elements:['💨'], note:'Respiración de fuego suave — para activarte.' },
+      { time:'5:45', label:'Caminata · 30-40 min', elements:['🔥','🌿'], note:'Aire fresco, sin audifonos al inicio. Observa. Piensa. Llega.' },
+      { time:'6:25', label:'Skincare AM + arreglo', elements:[], note:'' },
+      { time:'6:45', label:'Journaling · 5 min', elements:['🌊'], note:'¿Qué quiero dejar atrás esta semana?' },
+      { time:'7:00', label:'▶ TRABAJO', elements:[], note:'' },
+      { time:'9:00', label:'Desayuno · 20 min', elements:[], note:'' },
+      { time:'10:30', label:'Pausa · inglés · 15 min', elements:[], note:'' },
+      { time:'13:45', label:'Almuerzo · 30 min', elements:[], note:'' },
+      { time:'16:00', label:'◼ FIN TRABAJO', elements:[], note:'' },
+      { time:'16:00', label:'Tarde libre', elements:[], note:'Planes, amigos, o simplemente nada. Mereces el descanso.' },
+      { time:'19:00', label:'Cena', elements:[], note:'' },
+      { time:'20:00', label:'Lo que el cuerpo pida', elements:[], note:'Bajo, pintura, serie, salir — sin culpa.' },
+      { time:'22:00', label:'Dormir', elements:[], note:'Viernes también necesita buen sueño.' }
+    ]
+  },
+  {
+    day: 'Sábado', dow: 6, tag: 'Yoga AM + SQL',
+    blocks: [
+      { time:'6:00', label:'Despertar', elements:[], note:'Un poco más tarde — lo mereces.' },
+      { time:'6:15', label:'Yoga AM · 45-60 min', elements:['🌊','💨','🔥','🌿'], note:'Sábado es el día de todos los elementos: deja que el yoga los integre.' },
+      { time:'7:15', label:'Skincare AM + desayuno tranquilo', elements:[], note:'' },
+      { time:'8:30', label:'SQL course · 2-3h', elements:['🌿'], note:'Sábado AM es tu momento de aprendizaje técnico. TIERRA: construir algo sólido.' },
+      { time:'11:30', label:'Pausa + hogar', elements:[], note:'Lava ropa, organiza closet, lo que toque el sábado.' },
+      { time:'13:00', label:'Almuerzo', elements:[], note:'' },
+      { time:'14:00', label:'Bajo · 1h (semanas alternas)', elements:['🌿'], note:'Si esta semana no cayó el martes.' },
+      { time:'15:00', label:'Tiempo libre / planes', elements:[], note:'' },
+      { time:'19:00', label:'Cena', elements:[], note:'' },
+      { time:'20:00', label:'Inglés o lectura · 30 min', elements:['🌊'], note:'Contenido largo: podcast o artículo.' },
+      { time:'21:30', label:'Skincare PM + journaling', elements:['🌊'], note:'Cierra la semana por escrito.' },
+      { time:'22:00', label:'Dormir', elements:[], note:'' }
+    ]
+  },
+  {
+    day: 'Domingo', dow: 0, tag: 'Yoga + prep semana',
+    blocks: [
+      { time:'6:30', label:'Despertar (más tarde)', elements:[], note:'Tu cuerpo necesita el descanso real.' },
+      { time:'6:45', label:'Yoga restaurativo · 40 min', elements:['🌊','💨'], note:'Recuperación y escucha. Sin prisa.' },
+      { time:'7:30', label:'Journaling profundo · 15 min', elements:['🌊'], note:'Revisión de la semana + intención para la que empieza. Esto es tu brújula.' },
+      { time:'7:45', label:'Skincare AM', elements:[], note:'' },
+      { time:'8:30', label:'Desayuno tranquilo', elements:[], note:'' },
+      { time:'9:30', label:'Prep de comida de la semana', elements:['🌿'], note:'Porciona el pollo, lava verduras, deja lo que puedas listo. Media hora alcanza.' },
+      { time:'11:00', label:'Lectura · 1h', elements:['🌊'], note:'Sin pantallas. Este es tu momento de libro real.' },
+      { time:'13:00', label:'Almuerzo', elements:[], note:'' },
+      { time:'14:00', label:'Meditación · 30 min', elements:['🌊'], note:'Dos veces por semana — si no cayó el miércoles, aquí va.' },
+      { time:'15:00', label:'Tiempo libre / planes / descanso', elements:[], note:'' },
+      { time:'19:00', label:'Cena', elements:[], note:'' },
+      { time:'19:30', label:'Planeación de la semana · 15 min', elements:['🌿'], note:'Revisa lo que tienes en cada pestaña. Ajusta lo que sea. Prepara tu mentalidad.' },
+      { time:'21:30', label:'Skincare PM', elements:[], note:'' },
+      { time:'22:00', label:'Dormir', elements:[], note:'Empieza bien la semana durmiendo bien el domingo.' }
+    ]
+  }
+];
+
+function renderScheduleAccordion(todayDow){
+  const container = document.getElementById('scheduleAccordion');
+  if(!container) return;
+  container.innerHTML = '';
+  WEEKLY_SCHEDULE.forEach(day=>{
+    const isToday = day.dow === todayDow;
+    const wrapper = document.createElement('div');
+    wrapper.style.marginBottom = '6px';
+    const btn = document.createElement('button');
+    btn.className = 'macro-toggle' + (isToday ? ' open' : '');
+    btn.style.background = isToday ? 'var(--cedar)' : '';
+    btn.style.color = isToday ? 'var(--bone)' : '';
+    btn.innerHTML = `<span>${day.day}</span><span class="macro-toggle-count">${day.tag}</span><span class="toggle-icon" id="sched-icon-${day.dow}">${isToday ? '−' : '+'}</span>`;
+    const list = document.createElement('div');
+    list.className = 'sched-list';
+    list.style.display = isToday ? 'block' : 'none';
+    list.innerHTML = day.blocks.map(b=>`
+      <div class="sched-row">
+        <span class="sched-time">${b.time}</span>
+        <span class="sched-body">
+          <span class="sched-label">${b.label}${b.elements.length ? ' <span class="sched-els">'+b.elements.join(' ')+'</span>' : ''}</span>
+          ${b.note ? `<span class="sched-note">${b.note}</span>` : ''}
+        </span>
+      </div>`).join('');
+    btn.onclick = ()=>{
+      const isOpen = list.style.display !== 'none';
+      list.style.display = isOpen ? 'none' : 'block';
+      const icon = document.getElementById('sched-icon-'+day.dow);
+      if(icon) icon.textContent = isOpen ? '+' : '−';
+      btn.classList.toggle('open', !isOpen);
+    };
+    wrapper.appendChild(btn);
+    wrapper.appendChild(list);
+    container.appendChild(wrapper);
+  });
+}
+
 const INTENTIONS = [
   'Hoy elijo avanzar despacio pero sin detenerme.',
   'Hoy honro lo que mi cuerpo me pide, no lo que "debería" hacer.',
@@ -1657,23 +2058,32 @@ async function renderDashboard(){
 
   const today = new Date();
   const dateKey = todayStr();
+  const dow = today.getDay();
   const dayData = await loadDay(dateKey);
   dayData.checks = dayData.checks || {};
 
-  let topSection = '';
-  let info = null, phase = null;
+  // Cargar score de la semana
+  const weekScores = await loadWeekScores(today);
+  const weekKeys = Object.keys(weekScores).sort();
+  const totalScore = weekKeys.reduce((s,k)=>s+weekScores[k],0);
+  const maxScore = 7 * SCORE_MAX_PER_DAY;
+  const daysDone = weekKeys.filter(k=> new Date(k+'T00:00:00') <= today).length;
+  const allDone = daysDone >= 7;
 
+  // Intención
+  const intention = getDailyIntention(dateKey);
+
+  // Ciclo
+  let dialHTML = '', elHTML = '', phase = null, info = null;
   if(validConfig){
     info = getCycleInfo(validConfig);
     phase = PHASES[info.phaseKey];
     const angle = info.fraction * 360 - 90;
-    const r = 78;
-    const cx = 94, cy = 94;
+    const r = 78; const cx = 94, cy = 94;
     const mx = cx + r * Math.cos(angle * Math.PI/180);
     const my = cy + r * Math.sin(angle * Math.PI/180);
     const arcs = arcSegments(cx, cy, r);
-
-    topSection = `
+    dialHTML = `
       <div class="dial-section">
         <div class="dial-wrap">
           <svg viewBox="0 0 188 188" width="188" height="188">
@@ -1689,47 +2099,95 @@ async function renderDashboard(){
         </div>
         <div class="phase-name">Fase ${phase.label}</div>
         <div class="phase-energy">${phase.energy}</div>
-        <button class="settings-link" id="openSettings">Ajustar fecha de mi periodo</button>
-      </div>
-
-      <div class="section-title">Hoy equilibras tus 4 elementos</div>
-      <div class="section-sub">${phase.sub}</div>
-      <div class="grid" id="elGrid"></div>
-    `;
+        <button class="settings-link" id="openSettings">Ajustar fecha</button>
+      </div>`;
   } else {
-    topSection = `
-      <div class="card">
-        <h2>Sincronicemos tu Daily con tu ciclo</h2>
-        <p class="hint">Cuéntame cuándo empezó tu último periodo y qué tan largo es tu ciclo en promedio. Con eso calculo en qué fase estás hoy y equilibro tus 4 elementos según tu energía disponible. El resto de tu día (abajo) funciona igual sin importar esto.</p>
-        <div class="field">
-          <label for="startInput">Inicio de tu último periodo</label>
-          <input type="date" id="startInput" value="${todayStr()}">
-        </div>
-        <div class="field">
-          <label for="lengthInput">Duración promedio de tu ciclo (días)</label>
-          <input type="number" id="lengthInput" min="20" max="45" value="28">
-        </div>
-        <button class="btn" id="setupBtn">Calcular mi día</button>
-      </div>
-    `;
+    dialHTML = `<div class="card">
+      <h2>Sincroniza tu ciclo</h2>
+      <p class="hint">Ingresa la fecha de tu último periodo para activar las 4 fases y los elementos del día.</p>
+      <div class="field"><label for="startInput">Inicio de tu último periodo</label><input type="date" id="startInput" value="${todayStr()}"></div>
+      <div class="field"><label for="lengthInput">Duración promedio (días)</label><input type="number" id="lengthInput" min="20" max="45" value="28"></div>
+      <button class="btn" id="setupBtn">Calcular</button>
+    </div>`;
+  }
+
+  // Ejercicio de hoy (resumen para columna 2)
+  const todayEx = WEEKDAY_EXERCISE[dow];
+  const exDone = !!(await loadExerciseDay(dateKey)).done;
+
+  // Score bar
+  const barMaxPx = 48;
+  const WEEK_LABELS = ['L','M','M','J','V','S','D'];
+  let barsHTML = weekKeys.map((k,i)=>{
+    const pts = weekScores[k];
+    const isToday = k === dateKey;
+    const h = pts > 0 ? Math.max(8, Math.round((pts/SCORE_MAX_PER_DAY)*barMaxPx)) : 4;
+    const col = pts >= 8 ? 'var(--sage)' : pts >= 5 ? 'var(--cedar)' : pts >= 2 ? 'var(--text-muted)' : 'var(--surface-2)';
+    const d = new Date(k+'T12:00:00');
+    return `<div class="score-day${isToday?' today':''}">
+      <div class="score-day-pts">${pts>0?pts:''}</div>
+      <div class="score-day-bar" style="height:${h}px; background:${isToday?'var(--cedar)':col};"></div>
+      <div class="score-day-label">${WEEK_LABELS[(d.getDay()+6)%7]}</div>
+    </div>`;
+  }).join('');
+
+  // Recomendaciones al final de los 7 días
+  let recsHTML = '';
+  if(allDone){
+    const avg = totalScore / 7;
+    const recs = [];
+    if(avg < 5) recs.push('Tu consistencia esta semana estuvo baja. El objetivo no es ser perfecta — es aparecer. La semana que viene elige 3 hábitos que sí vayas a hacer sin falta y comienza por ahí.');
+    if(avg >= 5 && avg < 8) recs.push('Buen progreso. Para subir de nivel, identifica qué días se te caen más puntos y pon un recordatorio específico para esos días.');
+    if(avg >= 8) recs.push('Semana sólida. Estás construyendo el sistema — ahora el reto es repetirlo la próxima semana sin bajar el nivel.');
+    const ritualDays = await Promise.all(weekKeys.map(k=>loadRitualDay(k)));
+    const skincareFails = ritualDays.filter(d=>!d.skincareAM||!d.skincarePM).length;
+    if(skincareFails >= 4) recs.push('Skincare: se te fue más de la mitad de la semana. Intenta dejarlo pegado a algo que ya haces sí o sí (cepillarte los dientes).');
+    const exerciseDays = await Promise.all(weekKeys.map(k=>loadExerciseDay(k)));
+    const exerciseFails = exerciseDays.filter(d=>!d.done).length;
+    if(exerciseFails >= 3) recs.push('Ejercicio: faltaste 3 o más días. Revisa si el horario es real o si hay un bloqueador que no has nombrado todavía.');
+    recsHTML = `<div class="score-recs"><b>Resumen de la semana</b><br>${recs.join('<br><br>')}</div>`;
   }
 
   app.innerHTML = `
-    <div class="intention-card" id="intentionCard"></div>
+    <div class="intention-card">${intention}</div>
 
-    ${topSection}
+    <div class="daily-section">
+      <span class="col-title">Score de la semana</span>
+      <div class="rit-item">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px;">
+          <span class="rit-item-name">Esta semana</span>
+          <span class="score-total" style="color:var(--cedar);">${totalScore}<span style="font-size:13px; color:var(--text-muted); font-family:'Work Sans',sans-serif;"> / ${maxScore}</span></span>
+        </div>
+        <div class="score-bar">${barsHTML}</div>
+        <div class="rit-item-desc">${daysDone < 7 ? 'Van '+daysDone+' días de 7.' : '¡Semana completa!'}</div>
+        ${recsHTML}
+      </div>
+    </div>
 
-    <div class="section-title" style="margin-top:30px;">Todo lo de hoy, en un solo lugar</div>
-    <div class="section-sub">Rituales, nutrición, ejercicio y hogar de hoy — marca aquí y queda guardado también en cada pestaña.</div>
-    <div id="todayAll"></div>
+    <div class="daily-section">
+      <span class="col-title">Horario ideal de la semana</span>
+      <div id="scheduleAccordion"></div>
+    </div>
 
-    <div class="section-title" style="margin-top:30px;">Esta semana, para tenerla presente</div>
-    <div class="section-sub" id="weeklyOverviewSub">Lo que no es diario pero igual hay que cumplir antes de que cierre la semana.</div>
-    <div id="weeklyOverview"></div>
+    <div class="daily-section">
+      <span class="col-title">Ciclo menstrual</span>
+      ${dialHTML}
+    </div>
+
+    <div class="daily-section">
+      <span class="col-title">Elementos del día</span>
+      <div class="grid" id="elGrid"></div>
+    </div>
+
+    <div class="daily-section">
+      <span class="col-title">Rituales · ejercicio · hogar · learning</span>
+      <div id="todayRituales"></div>
+    </div>
   `;
 
-  document.getElementById('intentionCard').textContent = getDailyIntention(dateKey);
+  document.getElementById('intentionCard') && (()=>{})(); // ya inyectado en template
 
+  // Ciclo: dial + elementos
   if(validConfig){
     const grid = document.getElementById('elGrid');
     ELEMENTS.forEach(el=>{
@@ -1749,33 +2207,23 @@ async function renderDashboard(){
         </div>
         <div class="el-activity">${activity}</div>
         <label class="check-row">
-          <input type="checkbox" ${checked ? 'checked' : ''} data-el="${el.key}">
-          Hecho hoy
+          <input type="checkbox" ${checked ? 'checked' : ''} data-el="${el.key}">Hecho hoy
         </label>
-        ${el.key === 'agua' ? `<textarea placeholder="Escribe aquí tu journaling de hoy…">${escapeHtml(dayData.journal || '')}</textarea>` : ''}
+        ${el.key === 'agua' ? `<textarea placeholder="Journaling de hoy…">${escapeHtml(dayData.journal || '')}</textarea>` : ''}
       `;
       grid.appendChild(card);
-
       const checkbox = card.querySelector('input[type=checkbox]');
       checkbox.onchange = async ()=>{
         dayData.checks[el.key] = checkbox.checked;
         card.classList.toggle('done', checkbox.checked);
         await saveDay(dateKey, dayData);
       };
-
       if(el.key === 'agua'){
         const ta = card.querySelector('textarea');
-        let debounce;
-        ta.oninput = ()=>{
-          clearTimeout(debounce);
-          debounce = setTimeout(async ()=>{
-            dayData.journal = ta.value;
-            await saveDay(dateKey, dayData);
-          }, 600);
-        };
+        let db;
+        ta.oninput = ()=>{ clearTimeout(db); db = setTimeout(async ()=>{ dayData.journal = ta.value; await saveDay(dateKey, dayData); }, 600); };
       }
     });
-
     document.getElementById('openSettings').onclick = ()=> openSettingsModal(validConfig);
   } else {
     document.getElementById('setupBtn').onclick = async ()=>{
@@ -1787,20 +2235,11 @@ async function renderDashboard(){
     };
   }
 
-  // El resumen del día siempre se intenta renderizar, tenga o no ciclo configurado
-  try{
-    await renderTodayAll(dateKey, today);
-  }catch(e){
-    const container = document.getElementById('todayAll');
-    if(container) container.innerHTML = `<div class="rit-item-desc">No pude cargar el resumen de hoy. Intenta recargar.</div>`;
-  }
+  // Columna 2: Rituales completos
+  try{ await renderColRituales(dateKey); }catch(e){}
 
-  try{
-    await renderWeeklyOverview(today);
-  }catch(e){
-    const wContainer = document.getElementById('weeklyOverview');
-    if(wContainer) wContainer.innerHTML = `<div class="rit-item-desc">No pude cargar tu semana. Intenta recargar.</div>`;
-  }
+  // Horario semanal
+  renderScheduleAccordion(dow);
 }
 
 function arcSegments(cx, cy, r){
@@ -2065,7 +2504,6 @@ async function renderRituales(){
 }
 
 // ---------- Nutrición: render ----------
-let nutriView = 'manana'; // 'manana' | 'hoy'
 let groceryFreqFilter = 'Todos';
 let groceryCheckFilter = 'Todos';
 let finanzasDayFilter = 'Todos';
@@ -2088,11 +2526,9 @@ async function renderNutricion(){
     </div>
 
     <div class="rit-block">
-      <div class="menu-toggle">
-        <button id="toggle-manana" class="${nutriView==='manana' ? 'active' : ''}">Menú de mañana</button>
-        <button id="toggle-hoy" class="${nutriView==='hoy' ? 'active' : ''}">Menú de hoy</button>
-      </div>
-      <div id="menuArea"></div>
+      <div class="rit-head"><span class="rit-title">Tu menú</span><span class="rit-tag">elige según tu día</span></div>
+      <p class="rit-sub">Por cada comida, escoge una opción de cada categoría. No varía según el día — siempre tienes las mismas opciones disponibles.</p>
+      <div id="menuArea">${buildMealOptionsHTML('nutri')}</div>
     </div>
 
     <div class="rit-block">
@@ -2124,50 +2560,7 @@ async function renderNutricion(){
     </div>
   `;
 
-  // ---- Menú ----
-  renderMenuArea();
-  document.getElementById('toggle-manana').onclick = ()=>{ nutriView='manana'; renderNutricion(); };
-  document.getElementById('toggle-hoy').onclick = ()=>{ nutriView='hoy'; renderNutricion(); };
-
-  function renderMenuArea(){
-    const target = new Date();
-    if(nutriView === 'manana') target.setDate(target.getDate() + 1);
-    const menu = WEEK_MENU[target.getDay()];
-    const dayLabel = nutriView === 'manana' ? `Mañana · ${WEEKDAY_FULL[target.getDay()]}` : `Hoy · ${WEEKDAY_FULL[target.getDay()]}`;
-    const salad = getWeeklySalad(target);
-
-    const menuArea = document.getElementById('menuArea');
-    menuArea.innerHTML = `
-      <div class="section-title">${dayLabel}</div>
-      <div class="meal-card">
-        <div class="meal-name">Desayuno</div>
-        <div class="meal-row"><b>Proteína</b>${menu.desayuno.proteina}</div>
-        <div class="meal-row"><b>Carbo</b>${menu.desayuno.carbo}</div>
-        <div class="meal-row"><b>Fruta</b>${menu.desayuno.fruta}</div>
-        <div class="meal-row"><b>Grasa</b>${menu.desayuno.grasa}</div>
-      </div>
-      <div class="meal-card">
-        <div class="meal-name">Almuerzo</div>
-        <div class="meal-row"><b>Proteína</b>${menu.almuerzo.proteina}</div>
-        <div class="meal-row"><b>Carbo</b>${menu.almuerzo.carbo}</div>
-        <div class="meal-row"><b>Ensalada fija de esta semana</b>${salad}</div>
-        <div class="meal-row"><b>Fibra extra</b>${menu.almuerzo.fibraExtra}</div>
-      </div>
-      <div class="meal-card">
-        <div class="meal-name">Media mañana <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; text-transform:uppercase;">tu snack más fuerte</span></div>
-        <div class="meal-row">${menu.mediaManana}</div>
-      </div>
-      <div class="meal-card">
-        <div class="meal-name">Media tarde <span style="font-size:11px; color:var(--text-muted); font-family:'JetBrains Mono',monospace; text-transform:uppercase;">más ligero</span></div>
-        <div class="meal-row">${menu.mediaTarde}</div>
-      </div>
-      <div class="meal-card">
-        <div class="meal-name">Cena</div>
-        <div class="meal-row">${menu.cena}</div>
-      </div>
-      <div class="prep-box"><b>Para preparar antes:</b> ${menu.prep.join(' ')}</div>
-    `;
-  }
+  wireMacroToggles(document.getElementById('menuArea'));
 
   // ---- Agua ----
   const waterTrack = document.getElementById('waterTrack');
@@ -2214,7 +2607,7 @@ async function renderNutricion(){
   const groceryHave = await loadGroceryHave();
 
   const freqFilters = document.getElementById('freqFilters');
-  ['Todos','Semanal','Quincenal','Mensual'].forEach(f=>{
+  ['Todos','Semanal','Mensual'].forEach(f=>{
     const btn = document.createElement('button');
     btn.textContent = f;
     btn.className = groceryFreqFilter === f ? 'active' : '';
@@ -2233,7 +2626,7 @@ async function renderNutricion(){
 
   const groceryInventory = document.getElementById('groceryInventory');
   let total = 0;
-  const freqOrder = {'Semanal':0, 'Quincenal':1, 'Mensual':2};
+  const freqOrder = {'Semanal':0, 'Mensual':1};
   let list = [...GROCERY_INVENTORY].sort((a,b)=> freqOrder[a.freq] - freqOrder[b.freq]);
 
   if(groceryFreqFilter !== 'Todos') list = list.filter(g=> g.freq === groceryFreqFilter);
@@ -2264,60 +2657,59 @@ async function renderNutricion(){
 async function renderEjercicio(){
   const today = new Date();
   const dow = today.getDay();
+  const dateKey = todayStr();
   const config = await loadConfig();
+  const gymData = await loadGymSession(dateKey);
 
   let phaseAlert = '';
   if(isValidConfig(config)){
     const info = getCycleInfo(config);
     if(info.phaseKey === 'menstrual'){
-      phaseAlert = `
-        <div class="phase-alert">
-          <b>Estás en fase menstrual.</b> Baja todos los pesos un 30% aprox. y las series de fuerza a la mitad. Sube el cardio a 5 veces por semana, 30 minutos mínimo. Si el sangrado es abundante hoy, no entrenes fuerza — solo cardio suave si quieres, o descansa por completo.
-        </div>`;
+      phaseAlert = `<div class="phase-alert"><b>Fase menstrual.</b> Baja pesos ~30% y series de fuerza a la mitad. Si el sangrado es abundante hoy, cardio suave o descanso completo.</div>`;
     }
   }
 
-  const todayEx = WEEKDAY_EXERCISE[dow];
-  let todayBody = '';
-  if(todayEx.type === 'pesas'){
-    todayBody = `
-      <div class="ex-label">Pesas</div>
-      <div class="ex-title">${GYM_DAY_GLUTEO.title}</div>
-      <ul class="ex-list">${GYM_DAY_GLUTEO.items.map(i=>`<li>${i}</li>`).join('')}</ul>
-    `;
-  } else if(todayEx.items){
-    todayBody = `
-      <div class="ex-label">${todayEx.type === 'fijo' ? 'Día fijo' : 'Boost del día'}</div>
-      <div class="ex-title">${todayEx.title}</div>
-      <ul class="ex-list">${todayEx.items.map(i=>`<li>${i}</li>`).join('')}</ul>
-      ${todayEx.why ? `<div class="prep-box"><b>Por qué:</b> ${todayEx.why}</div>` : ''}
-    `;
-  } else {
-    todayBody = `
-      <div class="ex-label">${todayEx.type === 'fijo' ? 'Día fijo' : 'Boost del día'}</div>
-      <div class="ex-title">${todayEx.title}</div>
-      <div class="rit-item-desc" style="margin-bottom:8px;">${todayEx.detail}</div>
-      ${todayEx.why ? `<div class="prep-box"><b>Por qué:</b> ${todayEx.why}</div>` : ''}
-    `;
-  }
+  const trackerRows = GYM_GLUTEO_ROUTINE.map(ex=>{
+    const d = gymData[ex.key] || {done:false, weight:ex.weight};
+    return `<tr>
+      <td><input type="checkbox" class="gym-check" data-key="${ex.key}" ${d.done?'checked':''}></td>
+      <td>${ex.label}${ex.note?` <span class="gym-note">${ex.note}</span>`:''}</td>
+      <td><span class="gym-note">${ex.sets > 1 ? ex.sets+'×' : ''}${ex.reps > 0 ? ex.reps+' reps' : '—'}</span></td>
+      <td>${ex.weight > 0 ? `<input type="number" class="gym-weight" data-key="${ex.key}" value="${d.weight}" min="0" step="2.5">` : '—'}</td>
+    </tr>`;
+  }).join('');
 
   app.innerHTML = `
     ${phaseAlert}
-    <div class="today-exercise">${todayBody}</div>
-
     <div class="section-title">Tu semana</div>
-    <div class="section-sub">Lunes y miércoles fijos, sábado siempre es glúteo, el resto son 20 min de pilates repartidos por grupo muscular en lo que el sábado no cubre.</div>
-    <div id="weekExList"></div>
+    <div class="section-sub">Lo que toca hacer cada día — el check está en Daily para no duplicar.</div>
+    <div id="weekExList" style="margin-bottom:22px;"></div>
+
+    <div class="section-title">Tracker de glúteos · Jueves</div>
+    <div class="section-sub">Registra peso y marca cada ejercicio al completarlo. Se guarda por día.</div>
+    <div class="rit-item" style="overflow-x:auto;">
+      <table class="gym-table">
+        <thead><tr><th>✓</th><th>Ejercicio</th><th>Series</th><th>Kg</th></tr></thead>
+        <tbody>${trackerRows}</tbody>
+      </table>
+    </div>
   `;
+
+  document.querySelectorAll('.gym-check').forEach(cb=>{
+    cb.onchange = async()=>{ gymData[cb.dataset.key]=gymData[cb.dataset.key]||{}; gymData[cb.dataset.key].done=cb.checked; await saveGymSession(dateKey,gymData); };
+  });
+  document.querySelectorAll('.gym-weight').forEach(inp=>{
+    inp.onchange = async()=>{ gymData[inp.dataset.key]=gymData[inp.dataset.key]||{}; gymData[inp.dataset.key].weight=parseFloat(inp.value)||0; await saveGymSession(dateKey,gymData); };
+  });
 
   const weekList = document.getElementById('weekExList');
   for(let i=1;i<=7;i++){
     const d = new Date(today);
-    d.setDate(today.getDate() - dow + (i % 7)); // lunes(1)...domingo(0/7)
+    d.setDate(today.getDate() - (dow===0?6:dow-1) + (i-1));
     const dayIndex = d.getDay();
-    const ex = WEEKDAY_EXERCISE[dayIndex];
     const isToday = dayIndex === dow;
-    const label = ex.type === 'pesas' ? GYM_DAY_GLUTEO.title : ex.title;
+    const ex = WEEKDAY_EXERCISE[dayIndex];
+    const label = ex.sessions.map(s=>`${s.time} · ${s.name}`).join('  /  ');
     const row = document.createElement('div');
     row.className = 'week-ex-row' + (isToday ? ' today-row' : '');
     row.innerHTML = `<span class="wd">${WEEKDAY_SHORT[dayIndex]}</span><span>${label}</span>`;
@@ -2342,188 +2734,165 @@ function buildDailyItem(item, dayData, dateKey){
 }
 
 // ---------- Daily: resumen agregado del resto de secciones ----------
-async function renderTodayAll(dateKey, today){
-  const container = document.getElementById('todayAll');
+// ---- Columna 2: rituales del día ----
+async function renderColRituales(dateKey){
+  const container = document.getElementById('todayRituales');
   if(!container) return;
-
+  const today = new Date();
   const dow = today.getDay();
   const isMonday = dow === 1;
-  const ritualDay = await loadRitualDay(dateKey);
-  const nutriDay = await loadNutriDay(dateKey);
+  const weekKey = getWeekKey(today);
+
+  const [ritualDay, nutriDay, weekData, ritConfig, exerciseDay, hogarDay, learningDay] = await Promise.all([
+    loadRitualDay(dateKey), loadNutriDay(dateKey), loadRitualWeek(weekKey),
+    loadRitualConfig(), loadExerciseDay(dateKey), loadHogarDay(dateKey), loadLearningDay(dateKey)
+  ]);
   nutriDay.supplements = nutriDay.supplements || {};
   nutriDay.water = nutriDay.water || 0;
-  const hogarDay = await loadHogarDay(dateKey);
-  const exerciseDay = await loadExerciseDay(dateKey);
+  weekData.learningMinutes = weekData.learningMinutes || 0;
+  ritConfig.learningGoalHours = ritConfig.learningGoalHours || 3;
   const hairToday = HAIR_SCHEDULE[dow];
-  const todayEx = WEEKDAY_EXERCISE[dow];
-  const exerciseTitle = todayEx.type === 'pesas' ? GYM_DAY_GLUTEO.title : todayEx.title;
-  const menu = WEEK_MENU[dow];
-  const todaySalad = getWeeklySalad(today);
   const hogarTasks = getHogarTasks(today);
-  const learningDay = await loadLearningDay(dateKey);
+  const todayEx = WEEKDAY_EXERCISE[dow];
   const learningExtra = LEARNING_WEEKDAY_EXTRA[dow];
 
-  container.innerHTML = `
-    <div class="rit-block">
-      <div class="rit-head"><span class="rit-title">Rituales</span></div>
-      <div id="todayBody"></div>
-    </div>
-    <div class="rit-block">
-      <div class="rit-head"><span class="rit-title">Nutrición</span></div>
-      <div class="meal-card">
-        <div class="meal-name">Desayuno</div>
-        <div class="meal-row"><b>Proteína</b>${menu.desayuno.proteina}</div>
-        <div class="meal-row"><b>Carbo</b>${menu.desayuno.carbo}</div>
-        <div class="meal-row"><b>Fruta</b>${menu.desayuno.fruta}</div>
-        <div class="meal-row"><b>Grasa</b>${menu.desayuno.grasa}</div>
-      </div>
-      <div class="meal-card">
-        <div class="meal-name">Almuerzo</div>
-        <div class="meal-row"><b>Proteína</b>${menu.almuerzo.proteina}</div>
-        <div class="meal-row"><b>Carbo</b>${menu.almuerzo.carbo}</div>
-        <div class="meal-row"><b>Ensalada de la semana</b>${todaySalad}</div>
-        <div class="meal-row"><b>Fibra extra</b>${menu.almuerzo.fibraExtra}</div>
-      </div>
-      <div class="meal-card">
-        <div class="meal-name">Media mañana</div>
-        <div class="meal-row">${menu.mediaManana}</div>
-      </div>
-      <div class="meal-card">
-        <div class="meal-name">Media tarde</div>
-        <div class="meal-row">${menu.mediaTarde}</div>
-      </div>
-      <div class="meal-card">
-        <div class="meal-name">Cena</div>
-        <div class="meal-row">${menu.cena}</div>
-      </div>
-      <div id="todaySupp"></div>
-      <div class="rit-item" style="display:flex; justify-content:space-between; align-items:center;">
-        <span class="rit-item-desc" id="todayWaterDesc">Agua: ${nutriDay.water || 0} de ${WATER_GOAL_ML} ml</span>
-        <button class="qbtn" id="today-water-add">+200 ml</button>
-      </div>
-    </div>
-    <div class="rit-block">
-      <div class="rit-head"><span class="rit-title">Ejercicio</span></div>
-      <div id="todayExercise"></div>
-    </div>
-    <div class="rit-block">
-      <div class="rit-head"><span class="rit-title">Hogar</span></div>
-      <div id="todayHogar"></div>
-    </div>
-    <div class="rit-block">
-      <div class="rit-head"><span class="rit-title">Learning</span></div>
-      <div id="todayLearning"></div>
-    </div>
-  `;
-
-  // ---- Rituales (Body) ----
-  const todayBody = document.getElementById('todayBody');
-  const bodyItems = [
-    {key:'skincareAM', name:'Skincare AM'},
-    {key:'skincarePM', name:'Skincare PM'},
-    {key:'sunscreen', name:'Protector solar'},
-    {key:'hair', name:`Hair care: ${hairToday.label}`}
-  ];
-  bodyItems.forEach(item=>{
-    const checked = !!ritualDay[item.key];
+  function addLabel(text, mt){
+    const d = document.createElement('div');
+    d.className = 'rit-group-label';
+    if(mt) d.style.marginTop = mt;
+    d.textContent = text;
+    container.appendChild(d);
+  }
+  function addCheck(name, checked, onchange){
     const el = document.createElement('div');
     el.className = 'rit-item' + (checked ? ' done' : '');
-    el.innerHTML = `<label class="rit-row"><input type="checkbox" ${checked ? 'checked' : ''}><div class="rit-item-name">${item.name}</div></label>`;
-    el.querySelector('input').onchange = async (e)=>{
-      ritualDay[item.key] = e.target.checked;
-      el.classList.toggle('done', e.target.checked);
-      await saveRitualDay(dateKey, ritualDay);
-    };
-    todayBody.appendChild(el);
-  });
-  if(isMonday){
-    const checked = !!ritualDay.isotretinoina;
-    const el = document.createElement('div');
-    el.className = 'rit-item' + (checked ? ' done' : '');
-    el.innerHTML = `<label class="rit-row"><input type="checkbox" ${checked ? 'checked' : ''}><div class="rit-item-name">Isotretinoína (hoy es lunes)</div></label>`;
-    el.querySelector('input').onchange = async (e)=>{
-      ritualDay.isotretinoina = e.target.checked;
-      el.classList.toggle('done', e.target.checked);
-      await saveRitualDay(dateKey, ritualDay);
-    };
-    todayBody.appendChild(el);
+    el.innerHTML = `<label class="rit-row"><input type="checkbox" ${checked?'checked':''}><div class="rit-item-name">${name}</div></label>`;
+    el.querySelector('input').onchange = e=>{ el.classList.toggle('done',e.target.checked); onchange(e.target.checked); };
+    container.appendChild(el);
+    return el;
   }
 
-  // ---- Nutrición: suplementos + agua ----
-  const todaySupp = document.getElementById('todaySupp');
+  container.innerHTML = '';
+
+  // ---- Skincare ----
+  addLabel('Skincare & Body');
+  addCheck('Skincare AM', !!ritualDay.skincareAM, v=>{ ritualDay.skincareAM=v; saveRitualDay(dateKey,ritualDay); });
+  addCheck('Skincare PM', !!ritualDay.skincarePM, v=>{ ritualDay.skincarePM=v; saveRitualDay(dateKey,ritualDay); });
+  addCheck('Protector solar', !!ritualDay.sunscreen, v=>{ ritualDay.sunscreen=v; saveRitualDay(dateKey,ritualDay); });
+  addCheck(`Cabello: ${hairToday.label}`, !!ritualDay.hair, v=>{ ritualDay.hair=v; saveRitualDay(dateKey,ritualDay); });
+  if(isMonday) addCheck('Isotretinoína (lunes)', !!ritualDay.isotretinoina, v=>{ ritualDay.isotretinoina=v; saveRitualDay(dateKey,ritualDay); });
+
+  // ---- Suplementos ----
+  addLabel('Suplementos', '10px');
   SUPPLEMENTS.forEach(s=>{
     const checked = !!nutriDay.supplements[s.key];
     const row = document.createElement('div');
     row.className = 'supp-row' + (checked ? ' done' : '');
-    row.innerHTML = `<input type="checkbox" ${checked ? 'checked' : ''}><div><div class="rit-item-name">${s.name}</div><div class="rit-item-desc">${s.moment}</div></div>`;
-    row.querySelector('input').onchange = async (e)=>{
-      nutriDay.supplements[s.key] = e.target.checked;
-      row.classList.toggle('done', e.target.checked);
-      await saveNutriDay(dateKey, nutriDay);
-    };
-    todaySupp.appendChild(row);
+    row.innerHTML = `<input type="checkbox" ${checked?'checked':''}><div><div class="rit-item-name">${s.name}</div><div class="rit-item-desc">${s.moment}</div></div>`;
+    row.querySelector('input').onchange = async(e)=>{ nutriDay.supplements[s.key]=e.target.checked; row.classList.toggle('done',e.target.checked); await saveNutriDay(dateKey,nutriDay); };
+    container.appendChild(row);
   });
-  document.getElementById('today-water-add').onclick = async ()=>{
-    nutriDay.water = (nutriDay.water || 0) + WATER_STEP_ML;
-    document.getElementById('todayWaterDesc').textContent = `Agua: ${nutriDay.water} de ${WATER_GOAL_ML} ml`;
-    await saveNutriDay(dateKey, nutriDay);
+
+  // ---- Agua ----
+  const waterRow = document.createElement('div');
+  waterRow.className = 'rit-item';
+  waterRow.style.marginTop = '6px';
+  waterRow.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;"><span class="rit-item-desc" id="colWaterDesc">Agua: ${nutriDay.water} de ${WATER_GOAL_ML} ml</span><div class="quick-add" style="margin:0;"><button class="qbtn" id="colWaterAdd1">+200</button><button class="qbtn" id="colWaterAdd2">+500</button></div></div>
+    <div class="progress-bar" style="margin-top:6px;"><div class="progress-fill" id="colWaterBar" style="width:${Math.min(100,Math.round(nutriDay.water/WATER_GOAL_ML*100))}%"></div></div>`;
+  container.appendChild(waterRow);
+  document.getElementById('colWaterAdd1').onclick = async()=>{
+    nutriDay.water=Math.min(nutriDay.water+WATER_STEP_ML, WATER_GOAL_ML*2);
+    document.getElementById('colWaterDesc').textContent=`Agua: ${nutriDay.water} de ${WATER_GOAL_ML} ml`;
+    document.getElementById('colWaterBar').style.width=Math.min(100,Math.round(nutriDay.water/WATER_GOAL_ML*100))+'%';
+    await saveNutriDay(dateKey,nutriDay);
+  };
+  document.getElementById('colWaterAdd2').onclick = async()=>{
+    nutriDay.water=Math.min(nutriDay.water+500, WATER_GOAL_ML*2);
+    document.getElementById('colWaterDesc').textContent=`Agua: ${nutriDay.water} de ${WATER_GOAL_ML} ml`;
+    document.getElementById('colWaterBar').style.width=Math.min(100,Math.round(nutriDay.water/WATER_GOAL_ML*100))+'%';
+    await saveNutriDay(dateKey,nutriDay);
   };
 
   // ---- Ejercicio ----
-  const todayExercise = document.getElementById('todayExercise');
-  const exChecked = !!exerciseDay.done;
-  const exEl = document.createElement('div');
-  exEl.className = 'rit-item' + (exChecked ? ' done' : '');
-  exEl.innerHTML = `<label class="rit-row"><input type="checkbox" ${exChecked ? 'checked' : ''}><div class="rit-item-name">${exerciseTitle}</div></label>`;
-  exEl.querySelector('input').onchange = async (e)=>{
-    exerciseDay.done = e.target.checked;
-    exEl.classList.toggle('done', e.target.checked);
-    await saveExerciseDay(dateKey, exerciseDay);
-  };
-  todayExercise.appendChild(exEl);
-
-  // ---- Hogar ----
-  const todayHogar = document.getElementById('todayHogar');
-  hogarTasks.forEach(task=>{
-    const storeKey = task.key + '::' + task.name;
-    const checked = !!hogarDay[storeKey];
-    const el = document.createElement('div');
-    el.className = 'rit-item' + (checked ? ' done' : '');
-    el.innerHTML = `<label class="rit-row"><input type="checkbox" ${checked ? 'checked' : ''}><div class="rit-item-name">${task.name}</div></label>`;
-    el.querySelector('input').onchange = async (e)=>{
-      hogarDay[storeKey] = e.target.checked;
-      el.classList.toggle('done', e.target.checked);
-      await saveHogarDay(dateKey, hogarDay);
-    };
-    todayHogar.appendChild(el);
+  addLabel('Ejercicio', '10px');
+  todayEx.sessions.forEach((sess,i)=>{
+    addCheck(`${sess.time} · ${sess.name}`, !!exerciseDay['done'+i], v=>{ exerciseDay['done'+i]=v; saveExerciseDay(dateKey,exerciseDay); });
   });
 
-  // ---- Learning ----
-  const todayLearning = document.getElementById('todayLearning');
-  const habitChecked = !!learningDay.habit;
-  const habitEl = document.createElement('div');
-  habitEl.className = 'rit-item' + (habitChecked ? ' done' : '');
-  habitEl.innerHTML = `<label class="rit-row"><input type="checkbox" ${habitChecked ? 'checked' : ''}><div class="rit-item-name">${LEARNING_DAILY_HABIT.title}</div></label>`;
-  habitEl.querySelector('input').onchange = async (e)=>{
-    learningDay.habit = e.target.checked;
-    habitEl.classList.toggle('done', e.target.checked);
-    await saveLearningDay(dateKey, learningDay);
-  };
-  todayLearning.appendChild(habitEl);
-
-  if(learningExtra){
-    const extraChecked = !!learningDay.extra;
-    const extraEl = document.createElement('div');
-    extraEl.className = 'rit-item' + (extraChecked ? ' done' : '');
-    extraEl.innerHTML = `<label class="rit-row"><input type="checkbox" ${extraChecked ? 'checked' : ''}><div class="rit-item-name">${learningExtra.title}</div></label>`;
-    extraEl.querySelector('input').onchange = async (e)=>{
-      learningDay.extra = e.target.checked;
-      extraEl.classList.toggle('done', e.target.checked);
-      await saveLearningDay(dateKey, learningDay);
-    };
-    todayLearning.appendChild(extraEl);
+  // ---- Hogar ----
+  if(hogarTasks.length){
+    addLabel('Hogar', '10px');
+    hogarTasks.forEach(task=>{
+      const sk = task.key+'::'+task.name;
+      addCheck(task.name, !!hogarDay[sk], v=>{ hogarDay[sk]=v; saveHogarDay(dateKey,hogarDay); });
+    });
   }
+
+  // ---- Learning ----
+  addLabel('Learning', '10px');
+  addCheck('Shadowing + repaso · 15 min', !!learningDay.habit, v=>{ learningDay.habit=v; saveLearningDay(dateKey,learningDay); });
+  if(learningExtra) addCheck(learningExtra.title, !!learningDay.extra, v=>{ learningDay.extra=v; saveLearningDay(dateKey,learningDay); });
+
+  // ---- Trackers semanales: lectura y aprendizaje ----
+  addLabel('Esta semana · Mind', '10px');
+
+  ['reading','learning'].forEach(type=>{
+    const isReading = type === 'reading';
+    const mins = isReading ? (weekData.readingMinutes||0) : weekData.learningMinutes;
+    const goal = isReading ? (ritConfig.readingGoalHours||3)*60 : ritConfig.learningGoalHours*60;
+    const label = isReading ? 'Lectura' : 'Aprendizaje';
+    const pct = Math.min(100, Math.round(mins/goal*100));
+    const tracker = document.createElement('div');
+    tracker.className = 'rit-item';
+    tracker.style.marginBottom = '8px';
+    tracker.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="rit-item-name">${label}</div>
+        <span class="rit-item-desc">${(mins/60).toFixed(1)}h / ${goal/60}h</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="quick-add" style="margin-top:6px;">
+        <button class="qbtn" data-type="${type}" data-min="15">+15 min</button>
+        <button class="qbtn" data-type="${type}" data-min="30">+30 min</button>
+      </div>`;
+    container.appendChild(tracker);
+    tracker.querySelectorAll('.qbtn').forEach(btn=>{
+      btn.onclick = async()=>{
+        const add = parseInt(btn.dataset.min);
+        if(isReading) weekData.readingMinutes=(weekData.readingMinutes||0)+add;
+        else weekData.learningMinutes=(weekData.learningMinutes||0)+add;
+        await saveRitualWeek(weekKey, weekData);
+        renderColRituales(dateKey);
+      };
+    });
+  });
+
+  // ---- Uñas, láser, meditación semanales ----
+  addLabel('Esta semana · Body & Soul', '4px');
+
+  const nailsEl = addCheck('Uñas (semanal)', !!weekData.nails, async v=>{ weekData.nails=v; await saveRitualWeek(weekKey,weekData); });
+
+  const laserDue = !ritConfig.laserLastDate || diffInDays(new Date(ritConfig.laserLastDate+'T00:00:00'), today) >= 4;
+  const laserEl = document.createElement('div');
+  laserEl.className = 'rit-item' + (laserDue ? '' : ' done');
+  laserEl.innerHTML = `<div class="rit-item-name">Láser</div><div class="rit-item-desc">${laserDue ? 'Te toca hoy' : 'Al día'}</div>
+    <div class="quick-add"><button class="qbtn" id="colLaserBtn">Hecho hoy</button></div>`;
+  container.appendChild(laserEl);
+  document.getElementById('colLaserBtn').onclick = async()=>{ ritConfig.laserLastDate=dateKey; await saveRitualConfig(ritConfig); renderColRituales(dateKey); };
+
+  const medEl = document.createElement('div');
+  medEl.className = 'rit-item' + ((weekData.meditationCount||0)>=2 ? ' done' : '');
+  medEl.innerHTML = `<div class="rit-item-name">Meditación</div><div class="rit-item-desc">${weekData.meditationCount||0} de 2 sesiones</div>
+    <div class="quick-add"><button class="qbtn" id="colMedBtn">+1 sesión</button></div>`;
+  container.appendChild(medEl);
+  document.getElementById('colMedBtn').onclick = async()=>{ weekData.meditationCount=(weekData.meditationCount||0)+1; await saveRitualWeek(weekKey,weekData); renderColRituales(dateKey); };
 }
+
+async function renderTodayAll(dateKey, today){
+  // mantenida por compatibilidad
+}
+
+
 
 // ---------- Hogar: render ----------
 async function renderHogar(){
@@ -3061,7 +3430,6 @@ function setActiveTab(id){
 }
 
 document.getElementById('tab-daily').onclick = ()=>{ setActiveTab('tab-daily'); renderDashboard(); };
-document.getElementById('tab-rituales').onclick = ()=>{ setActiveTab('tab-rituales'); renderRituales(); };
 document.getElementById('tab-nutricion').onclick = ()=>{ setActiveTab('tab-nutricion'); renderNutricion(); };
 document.getElementById('tab-ejercicio').onclick = ()=>{ setActiveTab('tab-ejercicio'); renderEjercicio(); };
 document.getElementById('tab-hogar').onclick = ()=>{ setActiveTab('tab-hogar'); renderHogar(); };
